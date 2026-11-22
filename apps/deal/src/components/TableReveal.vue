@@ -38,10 +38,10 @@ const byFaction = computed(() =>
       <li
         v-for="s in bySeat"
         :key="s.seat"
-        class="flex items-center gap-2 rounded-xl p-2"
+        class="flex min-w-0 items-center gap-2 rounded-xl p-2"
         :class="FACTION_CLASSES[ROLES[s.role].faction].bg"
       >
-        <span class="w-12 shrink-0 text-right font-mono text-comment">{{
+        <span class="w-14 shrink-0 text-right font-mono whitespace-nowrap text-comment">{{
           t('common.seat', { n: s.seat })
         }}</span>
         <span

@@ -27,14 +27,14 @@ const rolesInGame = () => ROLE_IDS.filter((r) => (props.state.setup.roles[r] ?? 
     <li
       v-for="p in state.players"
       :key="p.seat"
-      class="flex items-center gap-2 rounded-xl p-2"
+      class="flex min-w-0 items-center gap-2 rounded-xl p-2"
       :class="[
         p.role ? FACTION_CLASSES[ROLES[p.role].faction].bg : 'bg-surface',
         p.alive ? '' : 'opacity-50',
       ]"
     >
       <span
-        class="w-10 shrink-0 text-right font-mono text-comment"
+        class="w-14 shrink-0 text-right font-mono whitespace-nowrap text-comment"
         :class="{ 'line-through': !p.alive }"
         >{{ t('common.seat', { n: p.seat }) }}</span
       >
@@ -44,20 +44,20 @@ const rolesInGame = () => ROLE_IDS.filter((r) => (props.state.setup.roles[r] ?? 
         class="size-5 shrink-0"
         aria-hidden="true"
       />
-      <span class="flex min-w-0 flex-col">
+      <span class="flex min-w-0 flex-1 flex-col">
         <span
-          class="truncate font-bold"
+          class="flex items-center gap-1 font-bold"
           :class="p.role ? FACTION_CLASSES[ROLES[p.role].faction].text : 'text-comment'"
         >
-          {{ p.role ? roleName(p.role) : t('seats.unknown') }}
+          <span class="truncate">{{ p.role ? roleName(p.role) : t('seats.unknown') }}</span>
           <span
             v-if="state.sheriff === p.seat"
-            class="i-tabler-star-filled size-3 text-yellow"
+            class="i-tabler-star-filled size-3 shrink-0 text-yellow"
             :title="t('seats.sheriff')"
           />
           <span
             v-if="state.lovers?.includes(p.seat)"
-            class="i-tabler-heart-filled size-3 text-red"
+            class="i-tabler-heart-filled size-3 shrink-0 text-red"
             :title="t('seats.lover')"
           />
         </span>
