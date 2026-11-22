@@ -56,6 +56,9 @@ export default {
     wildChild: { name: '野孩子', desc: '首夜選一名榜樣，榜樣出局後你變成狼人' },
   },
   boards: {
+    players: '人數',
+    board: '板子',
+    noneForCount: '{n} 人沒有板子，可以到角色發牌自訂，或複製最接近的板子再修改。',
     builtin: '內建',
     custom: '自訂',
     unverified: '未驗證',

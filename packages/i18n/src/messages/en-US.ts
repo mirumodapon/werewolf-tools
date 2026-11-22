@@ -86,6 +86,10 @@ export default {
     },
   },
   boards: {
+    players: 'Players',
+    board: 'Board',
+    noneForCount:
+      'No board for {n} players yet. Make one in Role Deal, or copy the closest board and adjust it.',
     builtin: 'Built-in',
     custom: 'Custom',
     unverified: 'Unverified',
