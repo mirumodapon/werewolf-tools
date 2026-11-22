@@ -1,7 +1,7 @@
 import vue from '@vitejs/plugin-vue'
 import { thirdPartyLicensesPlugin } from '@werewolf/licenses'
 import { buildVersion, werewolfPwa } from '@werewolf/pwa'
-import { manifestName, toolById } from '@werewolf/registry'
+import { listedTools, manifestName, toolById, toolIconClass } from '@werewolf/registry'
 import { werewolfUnoConfig } from '@werewolf/theme/uno'
 import { tokyoNightThemePlugin } from '@werewolf/theme/vite'
 import { fileURLToPath } from 'node:url'
@@ -16,7 +16,7 @@ export default defineConfig({
   plugins: [
     tokyoNightThemePlugin(),
     vue(),
-    UnoCSS(werewolfUnoConfig()),
+    UnoCSS(werewolfUnoConfig({ safelist: listedTools().map(toolIconClass) })),
     werewolfPwa(TOOL),
     thirdPartyLicensesPlugin(manifestName(TOOL)),
   ],

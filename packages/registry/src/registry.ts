@@ -83,7 +83,7 @@ export function validateTools(list: readonly ToolMeta[]): string[] {
   return problems
 }
 
-/** Written out in full so UnoCSS generates the class. */
+/** Built at runtime, so home's UnoCSS config safelists every tool's class. */
 export function toolIconClass(tool: ToolMeta): string {
   return `i-tabler-${tool.icon}`
 }

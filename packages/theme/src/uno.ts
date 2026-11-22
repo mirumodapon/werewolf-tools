@@ -34,10 +34,13 @@ input:focus, textarea:focus { outline: none; border-color: ${v('purple')}; }
 
 /**
  * The UnoCSS config of every app: Wind4, Tabler icons (the only icon set) and Tokyo Night.
- * Workspace `.ts` files are scanned too, so classes written in shared code are generated.
+ * Workspace `.ts` files are scanned too, so classes written in shared code are generated;
+ * pass `safelist` for classes only built at runtime.
  */
-export function werewolfUnoConfig(): UserConfig {
+export function werewolfUnoConfig({ safelist = [] }: { safelist?: string[] } = {}): UserConfig {
   return {
+    // Classes built at runtime (e.g. a tool's icon from the registry) that no file spells out.
+    safelist,
     presets: [
       presetWind4({ preflights: { reset: true } }),
       presetIcons({
