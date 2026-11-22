@@ -1,0 +1,41 @@
+{
+  "name": "@werewolf/judge",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "build": "vp build",
+    "preview": "vp preview",
+    "typecheck": "vue-tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@werewolf/boards": "workspace:*",
+    "@werewolf/i18n": "workspace:*",
+    "@werewolf/registry": "workspace:*",
+    "@werewolf/rules": "workspace:*",
+    "@werewolf/share": "workspace:*",
+    "@werewolf/storage": "workspace:*",
+    "@werewolf/theme": "workspace:*",
+    "@werewolf/ui": "workspace:*",
+    "dexie": "catalog:",
+    "pinia": "catalog:",
+    "vue": "catalog:",
+    "vue-i18n": "catalog:",
+    "vue-router": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@vitejs/plugin-vue": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "@werewolf/licenses": "workspace:*",
+    "@werewolf/pwa": "workspace:*",
+    "@werewolf/tsconfig": "workspace:*",
+    "fake-indexeddb": "catalog:",
+    "jsdom": "catalog:",
+    "unocss": "catalog:",
+    "vite-plugin-pwa": "catalog:",
+    "vite-plus": "catalog:",
+    "workbox-window": "catalog:"
+  }
+}

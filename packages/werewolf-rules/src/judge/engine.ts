@@ -168,7 +168,13 @@ export function witchOptions(state: GameState, witch: Player | null): NonNullabl
 
 // ─── Setup and the night plan ────────────────────────────────────────────────
 
-export function initialState(setup: JudgeSetup): GameState {
+export function initialState(input: JudgeSetup): GameState {
+  // Own plain copies: callers may pass proxies (Vue state) that structuredClone refuses.
+  const setup: JudgeSetup = {
+    roles: { ...input.roles },
+    rules: { ...input.rules },
+    table: input.table.map((s) => ({ seat: s.seat, role: s.role })),
+  }
   const count = expandRoles(setup.roles).length
   const known = new Map(setup.table.map((s) => [s.seat, s.role]))
   const state: GameState = {
