@@ -43,9 +43,14 @@ function toggle(n: number) {
   }
 }
 
+/**
+ * "Nobody" and a seat never coexist. Decide from the new value: with a parent-controlled
+ * model, reading `none` back right after setting it still gives the old value.
+ */
 function chooseNone() {
-  none.value = !none.value
-  if (none.value) model.value = Array.isArray(model.value) ? [] : null
+  const next = !none.value
+  none.value = next
+  if (next) model.value = Array.isArray(model.value) ? [] : null
 }
 </script>
 

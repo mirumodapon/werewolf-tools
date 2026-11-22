@@ -213,3 +213,41 @@ describe('CheckUpdate', () => {
     expect(w.find('[data-testid="update-result"]').text()).toBe('已是最新版本')
   })
 })
+
+describe('SeatPicker with a "nobody" button', () => {
+  // A real parent owning both models, as the moderator's step panel does.
+  const Parent = defineComponent(() => {
+    const seat = ref<number | null>(null)
+    const none = ref(false)
+    return () =>
+      h('div', [
+        h(SeatPicker, {
+          count: 5,
+          label: 's',
+          noneLabel: '空刀',
+          modelValue: seat.value,
+          'onUpdate:modelValue': (v: unknown) => (seat.value = v as number | null),
+          none: none.value,
+          'onUpdate:none': (v: boolean) => (none.value = v),
+        }),
+        h('output', { 'data-testid': 'state' }, `${seat.value}|${none.value}`),
+      ])
+  })
+
+  it('never keeps a seat and "nobody" selected together', async () => {
+    const w = mount(Parent, options())
+    const state = () => w.find('[data-testid="state"]').text()
+    const checked = () => w.findAll('[aria-checked="true"]').map((b) => b.text())
+    await w.find('[data-testid="seat-3"]').trigger('click')
+    expect(state()).toBe('3|false')
+    await w.find('[data-testid="seat-none"]').trigger('click')
+    expect(state()).toBe('null|true')
+    expect(checked()).toEqual(['空刀'])
+    await w.find('[data-testid="seat-4"]').trigger('click')
+    expect(state()).toBe('4|false')
+    expect(checked()).toEqual(['4'])
+    await w.find('[data-testid="seat-none"]').trigger('click')
+    await w.find('[data-testid="seat-none"]').trigger('click')
+    expect(state()).toBe('null|false')
+  })
+})
