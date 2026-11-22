@@ -2,6 +2,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { installWerewolf, LAUNCHER_KEY } from '@werewolf/ui'
 import { describe, expect, it, vi } from 'vite-plus/test'
 import { createMemoryHistory } from 'vue-router'
+import changelog from '../../../CHANGELOG.md?raw'
 import App from './App.vue'
 import { inlineParts, parseChangelog } from './changelog.ts'
 import { messages } from './locales/index.ts'
@@ -34,7 +35,10 @@ describe('home', () => {
 
   it('shows the three newest releases and links to the full changelog', async () => {
     const { w } = await mountHome('/info')
-    expect(w.find('[data-testid="changelog"]').text()).toContain('0.0.1')
+    const versions = [...changelog.matchAll(/^## (\S+)/gm)].map((m) => m[1]!)
+    const shown = w.find('[data-testid="changelog"]').text()
+    for (const v of versions.slice(0, 3)) expect(shown).toContain(v)
+    for (const v of versions.slice(3)) expect(shown).not.toContain(v)
     expect(w.find('[data-testid="full-changelog"]').attributes('href')).toBe('/docs/changelog')
   })
 })
