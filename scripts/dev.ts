@@ -86,12 +86,20 @@ server.on('upgrade', (req, socket, head) => {
   socket.on('error', () => up.destroy())
 })
 
+// A busy port must not leave the app servers running without their proxy.
+server.on('error', (error: NodeJS.ErrnoException) => {
+  console.error(
+    error.code === 'EADDRINUSE' ? `port ${port} is in use: try --port <another>` : error.message,
+  )
+  stop(1)
+})
+
 server.listen(port, host, () => {
   console.warn(`\n  狼人殺工具集 dev: http://localhost:${port}/`)
   for (const t of list) console.warn(`    ${t.path.padEnd(10)} → ${t.id} (:${ports.get(t)})`)
 })
 
-function stop() {
+function stop(code = 0) {
   for (const c of children) {
     try {
       if (c.pid) process.kill(-c.pid, 'SIGTERM')
@@ -100,7 +108,7 @@ function stop() {
     }
   }
   server.close()
-  process.exit(0)
+  process.exit(code)
 }
-process.on('SIGINT', stop)
-process.on('SIGTERM', stop)
+process.on('SIGINT', () => stop())
+process.on('SIGTERM', () => stop())
