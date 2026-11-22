@@ -4,6 +4,8 @@ import { computed } from 'vue'
 /**
  * A grid of seat numbers. Single choice (`v-model` a number or null) or several
  * (`multiple`, `v-model` an array). Out and disallowed seats are dimmed and disabled.
+ * With `noneLabel`, an explicit "none" button (`v-model:none`) lets the moderator say
+ * "nobody" on purpose, so picking nothing yet is never mistaken for choosing nobody.
  */
 const props = withDefaults(
   defineProps<{
@@ -14,6 +16,7 @@ const props = withDefaults(
     disabled?: readonly number[]
     dead?: readonly number[]
     marks?: Readonly<Record<number, string>>
+    noneLabel?: string
   }>(),
   {
     multiple: false,
@@ -24,11 +27,13 @@ const props = withDefaults(
   },
 )
 const model = defineModel<number | null | number[]>({ required: true })
+const none = defineModel<boolean>('none', { default: false })
 const seats = computed(() => Array.from({ length: props.count }, (_, i) => i + 1))
 const selected = (n: number) =>
   Array.isArray(model.value) ? model.value.includes(n) : model.value === n
 
 function toggle(n: number) {
+  none.value = false
   if (Array.isArray(model.value)) {
     const list = model.value
     if (list.includes(n)) model.value = list.filter((s) => s !== n)
@@ -36,6 +41,11 @@ function toggle(n: number) {
   } else {
     model.value = model.value === n ? null : n
   }
+}
+
+function chooseNone() {
+  none.value = !none.value
+  if (none.value) model.value = Array.isArray(model.value) ? [] : null
 }
 </script>
 
@@ -67,6 +77,18 @@ function toggle(n: number) {
         :class="selected(n) ? 'text-bg' : 'text-comment'"
         >{{ marks[n] }}</span
       >
+    </button>
+    <button
+      v-if="noneLabel"
+      type="button"
+      :role="multiple ? 'checkbox' : 'radio'"
+      :aria-checked="none"
+      class="col-span-5 h-11 rounded-lg"
+      :class="none ? 'bg-purple font-bold text-bg' : 'bg-surface text-muted'"
+      data-testid="seat-none"
+      @click="chooseNone"
+    >
+      {{ noneLabel }}
     </button>
   </div>
 </template>

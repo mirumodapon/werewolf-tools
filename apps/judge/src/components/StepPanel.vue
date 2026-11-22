@@ -36,11 +36,16 @@ const specials = ref<Partial<Record<RoleId, number | null>>>({})
 const pickSpecial = (role: RoleId, seat: number | null) =>
   (specials.value = { ...specials.value, [role]: seat })
 const target = ref<number | null>(null)
+/** The explicit "nobody" choices (空守, 空刀, 不毒…): picking nothing is not the same as choosing nobody. */
+const targetNone = ref(false)
 const pair = ref<number[]>([])
+const pairNone = ref(false)
 const save = ref(false)
 const poison = ref<number | null>(null)
+const poisonNone = ref(false)
 const dayAction = ref<'vote' | 'explode' | 'duel'>('vote')
 const blast = ref<number | null>(null)
+const blastNone = ref(false)
 
 /** The seat acting this step: known, or picked now (first night). */
 const acting = computed(() => (props.step.identify ? actor.value : props.step.actor))
@@ -143,6 +148,18 @@ const script = computed<string[]>(() => {
   }
 })
 
+/** A seat chosen, or "nobody" chosen on purpose. */
+const decided = () => target.value !== null || targetNone.value
+const specialsOk = () => {
+  const roles = props.step.wolves?.specials ?? []
+  const picked = roles.map((r) => specials.value[r])
+  return (
+    picked.every((seat) => seat != null && actors.value.includes(seat)) &&
+    new Set(picked).size === roles.length
+  )
+}
+
+/** Every input of the step is filled in (防呆): until then the button stays disabled. */
 const valid = computed(() => {
   const s = props.step
   if (s.dead) return true
@@ -152,25 +169,32 @@ const valid = computed(() => {
       return pair.value.length === 2
     case 'mixedBlood':
     case 'wildChild':
+    case 'seer':
       return target.value !== null
     case 'magician':
-      return pair.value.length === 0 || pair.value.length === 2
+      return pair.value.length === 2 || pairNone.value
     case 'wolves':
       return (
-        !s.identify ||
-        (actors.value.length > 0 &&
-          (s.wolves?.specials ?? []).every((r) => {
-            const seat = specials.value[r]
-            return seat != null && actors.value.includes(seat)
-          }) &&
-          new Set((s.wolves?.specials ?? []).map((r) => specials.value[r])).size ===
-            (s.wolves?.specials ?? []).length)
+        (!s.identify || (actors.value.length === s.wolves!.expected && specialsOk())) && decided()
       )
+    case 'guard':
+    case 'wolfBeauty':
+    case 'crow':
+    case 'sheriff':
+    case 'shoot':
+    case 'badge':
+      return decided()
+    case 'witch':
+      return save.value || !witch.value?.poison || poison.value !== null || poisonNone.value
     case 'identify':
       return actor.value !== null
     case 'day':
-      if (dayAction.value === 'vote') return true
-      if (dayAction.value === 'explode') return actor.value !== null
+      if (dayAction.value === 'vote') return decided()
+      if (dayAction.value === 'explode')
+        return (
+          actor.value !== null &&
+          (explodingRole.value !== 'whiteWolfKing' || blast.value !== null || blastNone.value)
+        )
       return (s.day!.knight !== null || actor.value !== null) && target.value !== null
     default:
       return true
@@ -280,7 +304,9 @@ function chooseDayAction(action: 'vote' | 'explode' | 'duel') {
   dayAction.value = action
   actor.value = null
   target.value = null
+  targetNone.value = false
   blast.value = null
+  blastNone.value = false
 }
 </script>
 
@@ -322,6 +348,12 @@ function chooseDayAction(action: 'vote' | 'explode' | 'duel') {
       <section v-if="step.id === 'wolves' && step.identify" class="flex flex-col gap-2">
         <h3 class="text-sm text-subtle">
           {{ t('play.whoAreWolves', { n: step.wolves!.expected }) }}
+          <span
+            class="font-mono"
+            :class="actors.length === step.wolves!.expected ? 'text-green' : 'text-orange'"
+            data-testid="wolves-count"
+            >{{ actors.length }}／{{ step.wolves!.expected }}</span
+          >
         </h3>
         <SeatPicker
           v-model="actors"
@@ -360,11 +392,13 @@ function chooseDayAction(action: 'vote' | 'explode' | 'duel') {
         </h3>
         <SeatPicker
           v-model="pair"
+          v-model:none="pairNone"
           multiple
           :max="2"
           :count="count"
           :label="t(`steps.${step.id}`)"
           :dead="dead"
+          :none-label="step.id === 'magician' ? t('inputs.noSwap') : undefined"
         />
       </section>
 
@@ -388,12 +422,20 @@ function chooseDayAction(action: 'vote' | 'explode' | 'duel') {
               crow: t('inputs.curse'),
             }[step.id as string]
           }}
-          <span v-if="!['mixedBlood', 'wildChild'].includes(step.id)" class="text-comment"
-            >（{{ t('play.noTarget') }}：{{ t('common.none') }}）</span
-          >
         </h3>
         <SeatPicker
           v-model="target"
+          v-model:none="targetNone"
+          :none-label="
+            (
+              {
+                guard: t('inputs.noGuard'),
+                wolves: t('inputs.noKill'),
+                wolfBeauty: t('inputs.noCharm'),
+                crow: t('inputs.noCurse'),
+              } as Record<string, string>
+            )[step.id]
+          "
           :count="count"
           :label="t(`steps.${step.id}`)"
           :dead="step.id === 'seer' ? [] : dead"
@@ -429,18 +471,22 @@ function chooseDayAction(action: 'vote' | 'explode' | 'duel') {
           class="flex min-h-12 items-center gap-2 rounded-xl px-3 font-bold"
           :class="save ? 'bg-green text-bg' : 'bg-surface'"
           data-testid="witch-save"
-          @click="((save = !save), (poison = null))"
+          @click="((save = !save), (poison = null), (poisonNone = false))"
         >
           <span class="i-tabler-heart-plus size-5" aria-hidden="true" />{{
             t('inputs.save', { n: witch.victim })
           }}
         </button>
         <template v-if="witch.poison && !save">
-          <h3 class="text-sm text-subtle">
-            {{ t('inputs.poison')
-            }}<span class="text-comment">（{{ t('play.noTarget') }}：{{ t('common.none') }}）</span>
-          </h3>
-          <SeatPicker v-model="poison" :count="count" :label="t('inputs.poison')" :dead="dead" />
+          <h3 class="text-sm text-subtle">{{ t('inputs.poison') }}</h3>
+          <SeatPicker
+            v-model="poison"
+            v-model:none="poisonNone"
+            :none-label="t('inputs.noPoison')"
+            :count="count"
+            :label="t('inputs.poison')"
+            :dead="dead"
+          />
         </template>
       </section>
 
@@ -479,20 +525,21 @@ function chooseDayAction(action: 'vote' | 'explode' | 'duel') {
         </h3>
         <SeatPicker
           v-model="target"
+          v-model:none="targetNone"
+          :none-label="
+            (
+              {
+                sheriff: t('inputs.noSheriff'),
+                shoot: t('inputs.noShot'),
+                badge: t('inputs.tearBadge'),
+              } as Record<string, string>
+            )[step.id]
+          "
           :count="count"
           :label="t(`steps.${step.id}`)"
           :dead="step.id === 'sheriff' ? outBefore : dead"
           :disabled="step.id === 'shoot' ? [step.shooter!] : []"
         />
-        <p class="text-sm text-comment">
-          {{
-            {
-              sheriff: t('inputs.noSheriff'),
-              shoot: t('inputs.noShot'),
-              badge: t('inputs.tearBadge'),
-            }[step.id as string]
-          }}：{{ t('play.noTarget') }}
-        </p>
       </section>
 
       <section v-if="step.id === 'day'" class="flex flex-col gap-3">
@@ -521,10 +568,14 @@ function chooseDayAction(action: 'vote' | 'explode' | 'duel') {
           </button>
         </div>
         <template v-if="dayAction === 'vote'">
-          <SeatPicker v-model="target" :count="count" :label="t('inputs.vote')" :dead="dead" />
-          <p class="text-sm text-comment">
-            {{ target === null ? t('inputs.noExile') : t('inputs.exile', { n: target }) }}
-          </p>
+          <SeatPicker
+            v-model="target"
+            v-model:none="targetNone"
+            :none-label="t('inputs.noExile')"
+            :count="count"
+            :label="t('inputs.vote')"
+            :dead="dead"
+          />
         </template>
         <template v-else-if="dayAction === 'explode'">
           <h3 class="text-sm text-subtle">{{ t('inputs.explodeWho') }}</h3>
@@ -539,6 +590,8 @@ function chooseDayAction(action: 'vote' | 'explode' | 'duel') {
             <h3 class="text-sm text-subtle">{{ t('inputs.blast') }}</h3>
             <SeatPicker
               v-model="blast"
+              v-model:none="blastNone"
+              :none-label="t('inputs.noBlast')"
               :count="count"
               :label="t('inputs.blast')"
               :dead="dead"

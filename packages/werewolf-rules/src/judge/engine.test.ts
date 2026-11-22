@@ -692,3 +692,18 @@ describe('identifying special wolves on night 1', () => {
     expect(g.state.plan.filter((p) => p.id === 'identify').map((p) => p.role)).toEqual(['wolfKing'])
   })
 })
+
+describe('checks on the inputs', () => {
+  it('needs every waking wolf on night 1', () => {
+    const setup: JudgeSetup = {
+      roles: { werewolf: 3, seer: 1, witch: 1, villager: 3 },
+      rules: { ...DEFAULT_RULES, sheriff: false },
+      table: [],
+    }
+    const short = deriveGame(setup, [
+      { step: 'dusk' },
+      { step: 'wolves', actors: [1, 2], kill: null },
+    ])
+    expect(short.error?.message).toBe('pick all 3 wolves')
+  })
+})

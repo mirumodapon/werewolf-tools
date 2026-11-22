@@ -575,7 +575,8 @@ function applyNight(state: GameState, event: GameEvent, step: Step) {
       if (step.dead) break
       if (step.identify) {
         const actors = event.actors ?? []
-        if (!actors.length) throw new JudgeError('which seats are wolves?')
+        const expected = step.wolves?.expected ?? actors.length
+        if (actors.length !== expected) throw new JudgeError(`pick all ${expected} wolves`)
         for (const seat of actors) identify(state, 'werewolf', seatOk(state, seat))
         for (const role of step.wolves?.specials ?? []) {
           const seat = event.specials?.[role]

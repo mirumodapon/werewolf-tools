@@ -109,13 +109,16 @@ describe('judge', () => {
     await start(w, router)
     await next(w) // dusk
     expect(w.text()).toContain('狼人是哪幾號？（共 3 位睜眼）')
-    for (const n of [1, 2, 3]) {
-      seat(w, n).click()
-      await flushPromises()
-    }
-    await flushPromises()
-    seat(w, 8).click()
-    await flushPromises()
+    const wolves = w.find('[role="group"][aria-label="狼人"]')
+    for (const n of [1, 2]) await wolves.find(`[data-testid="seat-${n}"]`).trigger('click')
+    expect(w.find('[data-testid="wolves-count"]').text()).toBe('2／3')
+    const kill = w.find('[role="radiogroup"][aria-label="狼人"]')
+    await kill.find('[data-testid="seat-8"]').trigger('click')
+    // 防呆: two of three wolves is not enough.
+    expect(w.find('[data-testid="submit"]').attributes('disabled')).toBeDefined()
+    await wolves.find('[data-testid="seat-3"]').trigger('click')
+    expect(w.find('[data-testid="wolves-count"]').text()).toBe('3／3')
+    expect(w.find('[data-testid="submit"]').attributes('disabled')).toBeUndefined()
     await next(w)
     expect(w.text()).toContain('女巫是幾號？')
     w.unmount()
@@ -170,6 +173,10 @@ describe('judge', () => {
     expect(w.text()).toContain('守衛是幾號')
     seat(w, 12).click()
     await flushPromises()
+    // A guard picked but no decision yet: the button waits for 空守 or a seat.
+    expect(w.find('[data-testid="submit"]').attributes('disabled')).toBeDefined()
+    await w.find('[data-testid="seat-none"]').trigger('click')
+    expect(w.find('[data-testid="submit"]').attributes('disabled')).toBeUndefined()
     await next(w)
     expect(w.find('[data-testid="script"]').text()).toContain('狼王請向法官舉手示意')
     for (const n of [1, 2, 3, 4]) {
@@ -183,6 +190,10 @@ describe('judge', () => {
     expect(w.find('[data-testid="submit"]').attributes('disabled')).toBeDefined()
     await special.find('[data-testid="seat-2"]').trigger('click')
     await flushPromises()
+    // Still no kill decision.
+    expect(w.find('[data-testid="submit"]').attributes('disabled')).toBeDefined()
+    const none = w.findAll('[data-testid="seat-none"]')
+    await none.at(-1)!.trigger('click')
     expect(w.find('[data-testid="submit"]').attributes('disabled')).toBeUndefined()
     w.unmount()
   })
