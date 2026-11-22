@@ -90,3 +90,21 @@ describe('BoardPicker', () => {
     expect(w.find('[data-testid="unverified"]').text()).toContain('未驗證')
   })
 })
+
+describe('handoff to the moderator', () => {
+  it('round-trips a dealt table', async () => {
+    const { decodeHandoff, encodeHandoff } = await import('./handoff.ts')
+    const h = {
+      boardId: 'b8-seer-witch-hunter',
+      boardName: { 'zh-TW': '預女獵', 'en-US': 'Seer · Witch · Hunter' },
+      roles: { werewolf: 1, seer: 1 },
+      rules: SMALL_TABLE_RULES,
+      table: [
+        { seat: 2, role: 'seer' as const },
+        { seat: 1, role: 'werewolf' as const },
+      ],
+    }
+    const back = await decodeHandoff(await encodeHandoff(h))
+    expect(back).toEqual({ ...h, table: [h.table[1], h.table[0]] })
+  })
+})
