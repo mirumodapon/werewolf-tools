@@ -86,7 +86,13 @@ export type GameEvent =
   | { step: 'mixedBlood' | 'wildChild'; actor?: number; target?: number }
   | { step: 'magician'; actor?: number; swap?: [number, number] | null }
   | { step: 'guard'; actor?: number; target?: number | null }
-  | { step: 'wolves'; actors?: number[]; kill?: number | null }
+  | {
+      step: 'wolves'
+      actors?: number[]
+      /** Night 1: which of `actors` is each special wolf (狼王, 白狼王) waking with the pack. */
+      specials?: Partial<Record<RoleId, number>>
+      kill?: number | null
+    }
   | { step: 'identify'; role: RoleId; actor: number }
   | { step: 'wolfBeauty'; actor?: number; target?: number | null }
   | { step: 'hiddenWolf'; actor?: number }
@@ -191,8 +197,11 @@ export interface Step {
   identify: boolean
   /** The role's holder is out: read the lines, pause, take no input. */
   dead: boolean
-  /** `wolves`: how many wolves wake (to identify) and the known ones. */
-  wolves?: { expected: number; seats: number[] }
+  /**
+   * `wolves`: how many wake (to identify), the known ones, and the special wolves to point
+   * out among them on night 1.
+   */
+  wolves?: { expected: number; seats: number[]; specials: RoleId[] }
   guardForbidden?: number | null
   witch?: {
     victim: number | null

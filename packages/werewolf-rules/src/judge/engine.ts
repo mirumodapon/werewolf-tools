@@ -27,6 +27,8 @@ export class JudgeError extends Error {
 
 /** Wolves that wake up to kill from the first night (隱狼 joins later). */
 export const PACK_ROLES: readonly RoleId[] = ['werewolf', 'wolfKing', 'whiteWolfKing', 'wolfBeauty']
+/** Special wolves without a night action of their own: pointed out among the pack on night 1. */
+export const PACK_SPECIALS = ['wolfKing', 'whiteWolfKing'] as const
 /** Roles without a night action, identified at the end of night 1. */
 export const IDENTIFY_ROLES: readonly RoleId[] = ['wolfKing', 'whiteWolfKing', 'idiot', 'knight']
 /** Deaths that take away 獵人's and 狼王's shot. */
@@ -245,9 +247,12 @@ export function nightPlan(state: GameState): PlanItem[] {
   call('magician', 'magician')
   call('guard', 'guard')
   if (PACK_ROLES.some(has) || has('hiddenWolf')) plan.push({ id: 'wolves', role: 'werewolf' })
+  // Special wolves who wake with the pack are pointed out during the wolves' turn; only
+  // those kept apart (狼王 not meeting the pack) are called on their own.
   if (first)
-    for (const role of ['wolfKing', 'whiteWolfKing'] as const)
-      if (has(role) && !holder(state, role)) plan.push({ id: 'identify', role })
+    for (const role of PACK_SPECIALS)
+      if (has(role) && !holder(state, role) && !packRoles(state).includes(role))
+        plan.push({ id: 'identify', role })
   call('wolfBeauty', 'wolfBeauty')
   if (first) call('hiddenWolf', 'hiddenWolf')
   call('witch', 'witch')
@@ -324,11 +329,15 @@ function nightStep(
       (p) => p.role && (PACK_ROLES.includes(p.role) || p.role === 'hiddenWolf'),
     )
     const expected = packRoles(state).reduce((n, r) => n + (state.setup.roles[r] ?? 0), 0)
+    const identifying = !anyKnown && expected > 0
+    const specials = identifying
+      ? PACK_SPECIALS.filter((r) => present(state, r) && packRoles(state).includes(r))
+      : []
     return {
       ...step,
-      identify: !anyKnown && expected > 0,
+      identify: identifying,
       dead: anyKnown && !seats.length,
-      wolves: { expected, seats },
+      wolves: { expected, seats, specials },
     }
   }
   const role = item.role!
@@ -568,6 +577,12 @@ function applyNight(state: GameState, event: GameEvent, step: Step) {
         const actors = event.actors ?? []
         if (!actors.length) throw new JudgeError('which seats are wolves?')
         for (const seat of actors) identify(state, 'werewolf', seatOk(state, seat))
+        for (const role of step.wolves?.specials ?? []) {
+          const seat = event.specials?.[role]
+          if (seat === undefined || !actors.includes(seat))
+            throw new JudgeError(`which of the wolves is the ${role}?`)
+          identify(state, role, seat)
+        }
       }
       const kill = event.kill ?? null
       if (kill !== null) seatOk(state, kill)

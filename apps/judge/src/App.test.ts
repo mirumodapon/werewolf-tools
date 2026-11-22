@@ -106,7 +106,10 @@ describe('judge', () => {
     await start(w, router)
     await next(w) // dusk
     expect(w.text()).toContain('狼人是哪幾號？（共 3 位睜眼）')
-    for (const n of [1, 2, 3]) seat(w, n).click()
+    for (const n of [1, 2, 3]) {
+      seat(w, n).click()
+      await flushPromises()
+    }
     await flushPromises()
     seat(w, 8).click()
     await flushPromises()
@@ -150,5 +153,34 @@ describe('judge', () => {
     const plain = await mountJudge('/new')
     expect(plain.w.find('[data-testid="no-options"]').text()).toBe('無進階設定')
     plain.w.unmount()
+  })
+
+  it("asks which wolf is the wolf king during the wolves' turn", async () => {
+    const { w, router } = await mountJudge('/new')
+    await w.find('[data-testid="count-12"]').trigger('click')
+    await flushPromises()
+    await w.find('[data-testid="board-b12-wolf-king-guard"]').trigger('click')
+    await flushPromises()
+    await start(w, router)
+    await next(w) // dusk
+    await next(w) // guard: nobody yet known, pick the guard
+    expect(w.text()).toContain('守衛是幾號')
+    seat(w, 12).click()
+    await flushPromises()
+    await next(w)
+    expect(w.find('[data-testid="script"]').text()).toContain('狼王請向法官舉手示意')
+    for (const n of [1, 2, 3, 4]) {
+      seat(w, n).click()
+      await flushPromises()
+    }
+    await flushPromises()
+    const special = w.find('[data-testid="special-wolfKing"]')
+    expect(special.exists()).toBe(true)
+    await special.find('[data-testid="seat-5"]').trigger('click')
+    expect(w.find('[data-testid="submit"]').attributes('disabled')).toBeDefined()
+    await special.find('[data-testid="seat-2"]').trigger('click')
+    await flushPromises()
+    expect(w.find('[data-testid="submit"]').attributes('disabled')).toBeUndefined()
+    w.unmount()
   })
 })

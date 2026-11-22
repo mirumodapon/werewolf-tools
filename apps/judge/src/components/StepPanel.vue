@@ -31,6 +31,10 @@ const roleLabel = computed(() => (props.step.role ? roleName(props.step.role) : 
 // Form state (fresh for every step: the parent keys this component by step).
 const actor = ref<number | null>(null)
 const actors = ref<number[]>([])
+/** Night 1: which picked wolf is each special wolf (狼王, 白狼王). */
+const specials = ref<Partial<Record<RoleId, number | null>>>({})
+const pickSpecial = (role: RoleId, seat: number | null) =>
+  (specials.value = { ...specials.value, [role]: seat })
 const target = ref<number | null>(null)
 const pair = ref<number[]>([])
 const save = ref(false)
@@ -88,8 +92,13 @@ const script = computed<string[]>(() => {
   switch (s.id) {
     case 'identify':
       return lines('script.identify', { role })
-    case 'wolves':
-      return lines(firstNight.value ? 'script.wolvesFirst' : 'script.wolves')
+    case 'wolves': {
+      const out = lines(firstNight.value ? 'script.wolvesFirst' : 'script.wolves')
+      const named = s.wolves?.specials ?? []
+      if (named.length)
+        out.splice(1, 0, t('script.specialsShow', { roles: named.map(roleName).join('、') }))
+      return out
+    }
     case 'witch': {
       const w = witch.value
       const told = w?.told
@@ -147,7 +156,16 @@ const valid = computed(() => {
     case 'magician':
       return pair.value.length === 0 || pair.value.length === 2
     case 'wolves':
-      return !s.identify || actors.value.length > 0
+      return (
+        !s.identify ||
+        (actors.value.length > 0 &&
+          (s.wolves?.specials ?? []).every((r) => {
+            const seat = specials.value[r]
+            return seat != null && actors.value.includes(seat)
+          }) &&
+          new Set((s.wolves?.specials ?? []).map((r) => specials.value[r])).size ===
+            (s.wolves?.specials ?? []).length)
+      )
     case 'identify':
       return actor.value !== null
     case 'day':
@@ -195,7 +213,18 @@ function submit() {
     case 'wolves':
       event = s.dead
         ? { step: 'wolves' }
-        : { step: 'wolves', ...(s.identify ? { actors: actors.value } : {}), kill: target.value }
+        : {
+            step: 'wolves',
+            ...(s.identify
+              ? {
+                  actors: actors.value,
+                  specials: Object.fromEntries(
+                    (s.wolves?.specials ?? []).map((r) => [r, specials.value[r]!]),
+                  ),
+                }
+              : {}),
+            kill: target.value,
+          }
       break
     case 'identify':
       event = { step: 'identify', role: s.role!, actor: actor.value! }
@@ -303,6 +332,26 @@ function chooseDayAction(action: 'vote' | 'explode' | 'duel') {
           :dead="dead"
           :disabled="notHolder"
         />
+        <template v-for="r in step.wolves!.specials" :key="r">
+          <h3 class="text-sm text-subtle">{{ t('play.whichSpecial', { role: roleName(r) }) }}</h3>
+          <SeatPicker
+            :model-value="specials[r] ?? null"
+            :count="count"
+            :label="t('play.whichSpecial', { role: roleName(r) })"
+            :dead="dead"
+            :disabled="
+              state.players
+                .map((p) => p.seat)
+                .filter(
+                  (n) =>
+                    !actors.includes(n) ||
+                    Object.entries(specials).some(([k, v]) => k !== r && v === n),
+                )
+            "
+            :data-testid="`special-${r}`"
+            @update:model-value="(v) => pickSpecial(r, v as number | null)"
+          />
+        </template>
       </section>
 
       <section v-if="step.id === 'cupid' || step.id === 'magician'" class="flex flex-col gap-2">

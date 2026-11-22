@@ -84,6 +84,7 @@ export default {
     action: 'Result',
     dead: 'The {role} is out: read the lines anyway, pause as if waiting, then go on.',
     whoIs: 'Which seat is the {role}?',
+    whichSpecial: 'Which of them is the {role}?',
     whoAreWolves: 'Which seats are wolves? ({n} wake up)',
     noTarget: 'Nobody',
     recent: 'Just happened',
@@ -153,6 +154,7 @@ export default {
       'Who do you kill tonight?',
       'Wolves, close your eyes.',
     ],
+    specialsShow: '{roles}, raise your hand to me.',
     identify: ['{role}, open your eyes and show yourself to me.', '{role}, close your eyes.'],
     wolfBeauty: [
       'Wolf Beauty, open your eyes.',

@@ -95,7 +95,6 @@ describe('night plan', () => {
       'cupid',
       'lovers',
       'wolves',
-      'identify:wolfKing',
       'witch',
       'seer',
       'hunter',
@@ -615,12 +614,12 @@ describe('wolf king options', () => {
 
   it('keeps the wolf king away from the pack when he does not meet it', () => {
     const together = ids(known(BOARD), [{ step: 'dusk' }, { step: 'guard', target: null }])
-    expect(together.step?.wolves).toEqual({ expected: 4, seats: [1, 2, 3, 4] })
+    expect(together.step?.wolves).toEqual({ expected: 4, seats: [1, 2, 3, 4], specials: [] })
     const apart = ids({ ...known(BOARD), options: { wolfKingMeetsPack: false } }, [
       { step: 'dusk' },
       { step: 'guard', target: null },
     ])
-    expect(apart.step?.wolves).toEqual({ expected: 3, seats: [1, 2, 3] })
+    expect(apart.step?.wolves).toEqual({ expected: 3, seats: [1, 2, 3], specials: [] })
   })
 
   it('lets the wolf king shoot after exploding only when chosen', () => {
@@ -638,5 +637,58 @@ describe('wolf king options', () => {
     expect(play().state).toMatchObject({ phase: 'night', round: 2 })
     const shooting = play({ wolfKingShootAfterExplode: true })
     expect(shooting.step).toMatchObject({ id: 'shoot', shooter: 4 })
+  })
+})
+
+describe('identifying special wolves on night 1', () => {
+  const setup = (options = {}): JudgeSetup => ({
+    roles: { werewolf: 2, wolfKing: 1, whiteWolfKing: 1, seer: 1, witch: 1, villager: 4 },
+    rules: { ...DEFAULT_RULES, sheriff: false },
+    table: [],
+    options,
+  })
+
+  it("points out the wolf king and white wolf king during the wolves' turn", () => {
+    const g = ids(setup(), [{ step: 'dusk' }])
+    expect(g.state.plan.some((p) => p.id === 'identify')).toBe(false)
+    expect(g.step?.wolves).toEqual({
+      expected: 4,
+      seats: [],
+      specials: ['wolfKing', 'whiteWolfKing'],
+    })
+    const after = ids(setup(), [
+      { step: 'dusk' },
+      {
+        step: 'wolves',
+        actors: [1, 2, 3, 4],
+        specials: { wolfKing: 2, whiteWolfKing: 4 },
+        kill: null,
+      },
+    ])
+    expect(after.state.players.slice(0, 4).map((p) => p.role)).toEqual([
+      'werewolf',
+      'wolfKing',
+      'werewolf',
+      'whiteWolfKing',
+    ])
+  })
+
+  it('refuses a special wolf who is not among the wolves', () => {
+    const g = deriveGame(setup(), [
+      { step: 'dusk' },
+      {
+        step: 'wolves',
+        actors: [1, 2, 3, 4],
+        specials: { wolfKing: 7, whiteWolfKing: 4 },
+        kill: null,
+      },
+    ])
+    expect(g.error?.message).toBe('which of the wolves is the wolfKing?')
+  })
+
+  it('still calls the wolf king alone when he does not meet the pack', () => {
+    const g = ids(setup({ wolfKingMeetsPack: false }), [{ step: 'dusk' }])
+    expect(g.step?.wolves).toEqual({ expected: 3, seats: [], specials: ['whiteWolfKing'] })
+    expect(g.state.plan.filter((p) => p.id === 'identify').map((p) => p.role)).toEqual(['wolfKing'])
   })
 })
