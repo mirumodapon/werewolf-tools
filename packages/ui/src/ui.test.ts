@@ -129,3 +129,26 @@ describe('UpdateGate', () => {
     expect(updateCalls).toEqual([true])
   })
 })
+
+describe('noZoom', () => {
+  it('cancels the second touch of a double tap and pinch gestures', async () => {
+    const { noZoom } = await import('./noZoom.ts')
+    const off = noZoom()
+    const touchEnd = (timeStamp: number) => {
+      const e = new Event('touchend', { cancelable: true })
+      Object.defineProperty(e, 'timeStamp', { value: timeStamp })
+      document.dispatchEvent(e)
+      return e.defaultPrevented
+    }
+    expect(touchEnd(1000)).toBe(false)
+    expect(touchEnd(1200)).toBe(true)
+    expect(touchEnd(3000)).toBe(false)
+    const gesture = new Event('gesturestart', { cancelable: true })
+    document.dispatchEvent(gesture)
+    expect(gesture.defaultPrevented).toBe(true)
+    off()
+    const after = new Event('gesturestart', { cancelable: true })
+    document.dispatchEvent(after)
+    expect(after.defaultPrevented).toBe(false)
+  })
+})

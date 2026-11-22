@@ -27,8 +27,8 @@ input::placeholder, textarea::placeholder { color: ${v('comment')}; opacity: 1; 
 input:focus, textarea:focus { outline: none; border-color: ${v('purple')}; }
 :focus-visible { outline: 2px solid ${v('purple')}; outline-offset: 2px; }
 ::selection { background: color-mix(in srgb, ${v('purple')} 35%, transparent); }
-/* Phones are tapped, held and double-tapped: never select text or zoom on a double tap. */
-html { touch-action: manipulation; }
+/* Phones are tapped, held and double-tapped: never select text or zoom (see @werewolf/ui noZoom). */
+*, *::before, *::after { touch-action: manipulation; }
 body, .no-select { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 input, textarea, [contenteditable] { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }`,
     },
