@@ -1,10 +1,4 @@
-import {
-  DEFAULT_VISION_MODE,
-  MAX_PLAYERS,
-  MIN_PLAYERS,
-  VISION_MODES,
-  type VisionMode,
-} from '@werewolf/rules'
+import { MAX_PLAYERS, MIN_PLAYERS } from '@werewolf/rules'
 import { readStore, storageKey, writeStore, type StoreSpec } from '@werewolf/storage'
 import { defineStore } from 'pinia'
 import { reactive, toRefs, watch } from 'vue'
@@ -14,14 +8,12 @@ import { z } from 'zod'
 export interface DealSettings {
   playerCount: number
   boardId: string | null
-  visionMode: VisionMode
   speakerWithDirection: boolean
 }
 
 export const DEFAULT_SETTINGS: DealSettings = {
   playerCount: 12,
   boardId: null,
-  visionMode: DEFAULT_VISION_MODE,
   speakerWithDirection: true,
 }
 
@@ -33,7 +25,6 @@ const schema = z.object({
     .max(MAX_PLAYERS)
     .catch(DEFAULT_SETTINGS.playerCount),
   boardId: z.string().nullable().catch(null),
-  visionMode: z.enum(VISION_MODES).catch(DEFAULT_SETTINGS.visionMode),
   speakerWithDirection: z.boolean().catch(DEFAULT_SETTINGS.speakerWithDirection),
 })
 

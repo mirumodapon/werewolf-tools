@@ -7,7 +7,7 @@ apps/home/               首頁（/）
 apps/deal/               角色發牌（/deal/）
 apps/judge/              法官輔助（/judge/）
 apps/docs/               使用說明（/docs/，VitePress，不是 PWA）
-packages/werewolf-rules/ 純 TS：角色、陣營、視野、板子與板子設定、配置檢查、法官規則引擎
+packages/werewolf-rules/ 純 TS：角色、陣營、板子與板子設定、配置檢查、法官規則引擎
 packages/boards/         自訂板子（全域共用）、板子連結與發牌交接格式、板子相關元件
 packages/registry/       工具清單（唯一來源）
 packages/storage/        localStorage 命名空間、版本與遷移、亂數與 id

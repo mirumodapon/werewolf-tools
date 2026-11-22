@@ -68,29 +68,33 @@ const leave = () => void router.push(isReplay.value ? '/history' : '/')
       <span class="i-tabler-repeat mr-1 size-4" aria-hidden="true" />{{ t('flow.replay') }}
     </p>
 
-    <template v-if="current && flow.step === 'handoff'">
-      <p class="text-center text-sm text-comment">
-        {{ t('flow.progress', { i: flow.index + 1, n: flow.table.length }) }}
-      </p>
-      <p class="text-center text-2xl" data-testid="handoff">
-        {{ t('flow.handoff') }}
-        <strong class="text-purple">{{ t('flow.player', { n: current.seat }) }}</strong>
-      </p>
-      <CardBack
-        :key="`back-${flow.index}`"
-        :label="t('flow.holdToReveal')"
-        @reveal="store.dispatch({ type: 'reveal' })"
+    <!-- The card sits in the middle of the screen; nothing on this page can be selected. -->
+    <div
+      v-if="current && (flow.step === 'handoff' || flow.step === 'reveal')"
+      class="no-select flex flex-1 flex-col items-center justify-center gap-4"
+      data-testid="card-stage"
+    >
+      <template v-if="flow.step === 'handoff'">
+        <p class="text-center text-sm text-comment">
+          {{ t('flow.progress', { i: flow.index + 1, n: flow.table.length }) }}
+        </p>
+        <p class="text-center text-2xl" data-testid="handoff">
+          {{ t('flow.handoff') }}
+          <strong class="text-purple">{{ t('flow.player', { n: current.seat }) }}</strong>
+        </p>
+        <CardBack
+          :key="`back-${flow.index}`"
+          :label="t('flow.holdToReveal')"
+          @reveal="store.dispatch({ type: 'reveal' })"
+        />
+      </template>
+      <RoleCard
+        v-else
+        :key="`card-${flow.index}`"
+        :self="current"
+        @cover="store.dispatch({ type: 'confirm' })"
       />
-    </template>
-
-    <RoleCard
-      v-else-if="current && flow.step === 'reveal' && record"
-      :key="`card-${flow.index}`"
-      :self="current"
-      :table="flow.table"
-      :vision-mode="record.visionMode"
-      @cover="store.dispatch({ type: 'confirm' })"
-    />
+    </div>
 
     <template v-else-if="flow.step === 'done' && record">
       <p class="flex items-center justify-center gap-2 text-xl text-green">

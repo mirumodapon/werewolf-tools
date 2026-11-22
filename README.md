@@ -16,8 +16,8 @@
 - **預設繁體中文**，可切換 English，所有工具同步；主題 Tokyo Night（系統／Night／Storm／Light）。
 - **板子**：內建常見板子，也能自訂角色張數與板子設定（屠邊／屠城、同守同救、警長競選、遺言）。法官輔助開局前有依板子角色而定的進階設定（女巫自救、狼王是否與狼隊見面、狼王自爆後能否開槍……）。自訂板子由角色發牌與法官輔助共用，可用連結與 QR code 分享。
 - **未驗證**：法官邏輯尚未經過人工驗證的板子，在選擇時標示「未驗證」。內建板子由 `packages/werewolf-rules/src/boards.ts` 的 `verified` 控制，維護者確認後改成 `true` 即移除標記；自訂板子一律未驗證。
-- **狼人視野**：狼王等特殊狼會被其他狼人看到，隱狼看得到同伴但同伴看不到他。
-- **交給法官**：發完牌可以把板子與座位角色以連結交給法官輔助。
+- **角色卡**：只顯示自己的角色，不列出狼人隊友（第一晚由法官叫醒互認）；看完在螢幕任何地方雙擊蓋牌。
+- **交給法官**：發完牌可以把板子與座位角色以連結交給法官輔助，直接進入進階設定。
 - **從首頁開啟**：從首頁（或首頁安裝的 App）開啟的工具，點標題可回到首頁。
 
 ## 架構
@@ -27,7 +27,7 @@ apps/home/               首頁（/）
 apps/deal/               角色發牌（/deal/）
 apps/judge/              法官輔助（/judge/）
 apps/docs/               使用說明（/docs/，VitePress）
-packages/werewolf-rules/ 純 TS：角色、視野、板子、板子設定、配置檢查、法官規則引擎
+packages/werewolf-rules/ 純 TS：角色、板子、板子設定、配置檢查、法官規則引擎
 packages/boards/         自訂板子（全域）、板子連結、發牌交接、板子元件
 packages/registry/       工具清單（唯一來源）
 packages/storage/        localStorage 命名空間與遷移、亂數與 id
@@ -72,7 +72,7 @@ pnpm new:app <id> --name 名稱 --name-en Name [--icon tabler-name] [--accent bl
 ## 新增角色、板子、翻譯
 
 - **板子**：在 `packages/werewolf-rules/src/boards.ts` 的 `BUILTIN_BOARDS` 加一筆（`players`、`slug`、雙語名稱、`roles`，可選 `rules`）；新板子預設未驗證。`pnpm test` 會檢查配置與人數。
-- **角色**：`roles.ts` 的 `ROLE_IDS` **最後面**加 id 並設定 `ROLES`；在 `packages/i18n/src/messages/*.ts` 加 `roles.<id>.name`／`desc`；在 `packages/ui/src/roleIcons.ts` 選 Tabler 圖示；有視野改 `vision.ts`；有夜晚或白天技能則改法官規則引擎與 `apps/judge` 的步驟與台詞，並補 `engine.test.ts`。
+- **角色**：`roles.ts` 的 `ROLE_IDS` **最後面**加 id 並設定 `ROLES`；在 `packages/i18n/src/messages/*.ts` 加 `roles.<id>.name`／`desc`；在 `packages/ui/src/roleIcons.ts` 選 Tabler 圖示；有夜晚或白天技能則改法官規則引擎與 `apps/judge` 的步驟與台詞，並補 `engine.test.ts`。
 - **翻譯**：共用文案在 `packages/i18n/src/messages/`，各工具在 `apps/<id>/src/locales/`；`zh-TW.ts` 為基準，`pnpm lint` 檢查兩種語言 key 一致。
 
 詳見使用說明的「開發者」章節。

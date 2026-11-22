@@ -5,13 +5,6 @@ export default {
   deal: {
     createCustom: '自訂板子',
     copyNearest: '複製「{name}」（{n} 人）',
-    vision: '狼人視野',
-    visionModes: { none: '不顯示', seats: '座位號', roles: '座位號＋角色' },
-    visionHints: {
-      none: '狼人卡片不列出同伴，第一晚睜眼互認',
-      seats: '狼人卡片列出同伴的座位號（狼王等特殊狼也會列出，隱狼除外）',
-      roles: '狼人卡片列出同伴的座位號與角色（隱狼除外）',
-    },
     start: '開始發牌',
     history: '歷史紀錄',
   },
@@ -19,10 +12,7 @@ export default {
     handoff: '請將手機交給',
     player: '{n} 號玩家',
     holdToReveal: '長按查看角色',
-    doubleTapToCover: '看完後雙擊卡片蓋牌',
-    wolves: '你的狼同伴',
-    wolvesNone: '第一晚睜眼確認同伴',
-    wolvesEmpty: '沒有你認識的狼同伴',
+    doubleTapToCover: '看完後雙擊螢幕任何地方蓋牌',
     progress: '第 {i} 位，共 {n} 位',
     done: '全部玩家都看過角色了',
     judgeView: '法官檢視',
@@ -77,6 +67,5 @@ export default {
     replay: '回放',
     deleteConfirm: '刪除這筆紀錄？',
     notFound: '找不到這筆紀錄',
-    vision: '狼人視野：{mode}',
   },
 } as const

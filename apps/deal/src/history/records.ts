@@ -3,12 +3,10 @@ import {
   LOCALES,
   normalizeRules,
   ROLE_IDS,
-  VISION_MODES,
   type BoardRules,
   type Localized,
   type RoleCounts,
   type SeatRole,
-  type VisionMode,
 } from '@werewolf/rules'
 import { z } from 'zod'
 
@@ -23,7 +21,6 @@ export interface DealRecord {
   boardName: Localized | string
   roles: RoleCounts
   rules: BoardRules
-  visionMode: VisionMode
   assignments: SeatRole[]
 }
 
@@ -44,7 +41,6 @@ const schema = z.object({
   boardName: z.union([z.string(), localizedName]),
   roles: z.partialRecord(z.enum(ROLE_IDS), z.number().int().nonnegative()),
   rules: z.unknown().optional(),
-  visionMode: z.enum(VISION_MODES),
   assignments: z
     .array(z.object({ seat: z.number().int().positive(), role: z.string().refine(isRoleId) }))
     .min(1),

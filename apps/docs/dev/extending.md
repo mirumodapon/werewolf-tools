@@ -23,9 +23,8 @@ builtin({
 1. `packages/werewolf-rules/src/roles.ts`：在 `ROLE_IDS` **最後面**加上 id（分享連結依這個順序編碼，不能插在中間），並在 `ROLES` 設定陣營、是否唯一、是否需要大桌（`complex`）。
 2. `packages/i18n/src/messages/zh-TW.ts` 與 `en-US.ts`：`roles.<id>.name` 與 `roles.<id>.desc`。
 3. `packages/ui/src/roleIcons.ts`：選一個 Tabler 圖示（完整 class 名稱，例如 `i-tabler-moon`）。
-4. 若有視野（例如新的狼）：`vision.ts`。
-5. 若有夜晚行動或白天技能：法官規則引擎（`judge/types.ts` 的步驟與事件、`engine.ts` 的 `nightPlan` 與套用邏輯）、法官輔助的 `StepPanel.vue` 與台詞（`apps/judge/src/locales`），並在 `engine.test.ts` 加情境測試。
-6. 更新使用說明的[角色](/rules/roles)補充說明（表格會自動更新）與[夜晚順序](/rules/night-order)。
+4. 若有夜晚行動或白天技能：法官規則引擎（`judge/types.ts` 的步驟與事件、`engine.ts` 的 `nightPlan` 與套用邏輯）、法官輔助的 `StepPanel.vue` 與台詞（`apps/judge/src/locales`），並在 `engine.test.ts` 加情境測試。
+5. 更新使用說明的[角色](/rules/roles)補充說明（表格會自動更新）與[夜晚順序](/rules/night-order)。
 
 ## 新增法官輔助的進階設定
 

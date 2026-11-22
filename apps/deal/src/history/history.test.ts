@@ -16,7 +16,6 @@ const record = (i: number): DealRecord => ({
   boardName: 'x',
   roles: { werewolf: 1, seer: 1 },
   rules: DEFAULT_RULES,
-  visionMode: 'seats',
   assignments: [
     { seat: 1, role: 'werewolf' },
     { seat: 2, role: 'seer' },

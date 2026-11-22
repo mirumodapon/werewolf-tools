@@ -1,14 +1,6 @@
 <script setup lang="ts">
 import { BoardPicker, useBoardsStore, useBoardText } from '@werewolf/boards'
-import {
-  BUILTIN_BOARDS,
-  checkBoard,
-  hasErrors,
-  playerCount,
-  VISION_MODES,
-  type VisionMode,
-} from '@werewolf/rules'
-import { Segmented } from '@werewolf/ui'
+import { BUILTIN_BOARDS, checkBoard, hasErrors, playerCount } from '@werewolf/rules'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { createDeal, useFlowStore } from '../../stores/flow.ts'
@@ -36,17 +28,10 @@ const nearest = computed(
         Math.abs(playerCount(b.roles) - settings.playerCount),
     )[0]!,
 )
-const visionOptions = computed(() =>
-  VISION_MODES.map((m) => ({ value: m, label: t(`deal.visionModes.${m}`) })),
-)
-const visionMode = computed({
-  get: () => settings.visionMode,
-  set: (m: VisionMode) => (settings.visionMode = m),
-})
 
 async function start() {
   if (!selected.value || blocked.value) return
-  const record = createDeal(selected.value, settings.visionMode)
+  const record = createDeal(selected.value)
   await history.add(record)
   flow.start(record, 'deal')
   await router.push('/deal')
@@ -69,12 +54,6 @@ async function start() {
       </RouterLink>
     </template>
   </BoardPicker>
-
-  <section class="flex flex-col gap-2">
-    <h2 class="text-sm text-subtle">{{ t('deal.vision') }}</h2>
-    <Segmented v-model="visionMode" :options="visionOptions" :label="t('deal.vision')" />
-    <p class="text-sm text-comment">{{ t(`deal.visionHints.${visionMode}`) }}</p>
-  </section>
 
   <button
     type="button"

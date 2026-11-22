@@ -1,4 +1,4 @@
-import { cleanCounts, expandRoles, type Board, type VisionMode } from '@werewolf/rules'
+import { cleanCounts, expandRoles, type Board } from '@werewolf/rules'
 import { newId } from '@werewolf/storage'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -16,7 +16,6 @@ import type { DealRecord } from '../history/records.ts'
 /** Shuffles a board onto seats 1..n: the record to save. */
 export function createDeal(
   board: Board,
-  visionMode: VisionMode,
   randomInt?: (max: number) => number,
   now = Date.now(),
 ): DealRecord {
@@ -27,7 +26,6 @@ export function createDeal(
     boardName: board.name,
     roles: cleanCounts(board.roles),
     rules: { ...board.rules },
-    visionMode,
     assignments: dealRoles(expandRoles(board.roles), randomInt),
   }
 }

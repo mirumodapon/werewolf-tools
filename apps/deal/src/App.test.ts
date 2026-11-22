@@ -51,11 +51,12 @@ describe('deal', () => {
       await w.find('[data-testid="card-back"]').trigger('pointerdown', { pointerType: 'touch' })
       vi.advanceTimersByTime(1000)
       await flushPromises()
-      const card = w.find('[data-testid="role-card"]')
+      expect(w.find('[data-testid="role-card"]').exists()).toBe(true)
       vi.advanceTimersByTime(600)
-      await card.trigger('click')
+      // A double tap anywhere on the screen, not on the card.
+      document.body.dispatchEvent(new Event('pointerup', { bubbles: true }))
       vi.advanceTimersByTime(100)
-      await card.trigger('click')
+      document.body.dispatchEvent(new Event('pointerup', { bubbles: true }))
       await flushPromises()
     }
     expect(w.text()).toContain('全部玩家都看過角色了')

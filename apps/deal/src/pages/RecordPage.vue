@@ -54,8 +54,7 @@ async function remove() {
     <template v-else-if="record">
       <p class="text-sm text-comment">
         {{ formatDate(record.createdAt) }} ·
-        {{ t('common.players', { n: playerCount(record.roles) }) }} ·
-        {{ t('history.vision', { mode: t(`deal.visionModes.${record.visionMode}`) }) }}
+        {{ t('common.players', { n: playerCount(record.roles) }) }}
       </p>
       <RoleChips :roles="record.roles" />
       <RulesSummary :rules="record.rules" />

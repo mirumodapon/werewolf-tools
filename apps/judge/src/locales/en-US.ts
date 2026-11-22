@@ -60,7 +60,7 @@ export default {
       },
       wolfKingMeetsPack: {
         label: 'The wolf king meets the pack',
-        hint: 'When off, the wolf king does not wake with the wolves or join the kill, and the pack does not know him; he joins the kill once the rest of the pack is out. In Role Deal, set wolf vision to Hidden.',
+        hint: 'When off, the wolf king does not wake with the wolves or join the kill, and the pack does not know him; he joins the kill once the rest of the pack is out.',
       },
       wolfKingShootAfterExplode: {
         label: 'The wolf king may shoot after exploding',

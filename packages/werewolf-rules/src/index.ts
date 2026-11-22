@@ -1,7 +1,6 @@
 export * from './locale.ts'
 export * from './roles.ts'
 export * from './table.ts'
-export * from './vision.ts'
 export * from './boardRules.ts'
 export * from './boards.ts'
 export * from './check.ts'

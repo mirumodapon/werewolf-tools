@@ -8,13 +8,6 @@ export default {
   deal: {
     createCustom: 'New board',
     copyNearest: 'Copy “{name}” ({n} players)',
-    vision: 'Wolf vision',
-    visionModes: { none: 'Hidden', seats: 'Seats', roles: 'Seats + roles' },
-    visionHints: {
-      none: 'Wolf cards list no teammates; wolves meet on the first night',
-      seats: 'Wolf cards list their teammates’ seats (special wolves too, not the hidden wolf)',
-      roles: 'Wolf cards list their teammates’ seats and roles (not the hidden wolf)',
-    },
     start: 'Deal',
     history: 'History',
   },
@@ -22,10 +15,7 @@ export default {
     handoff: 'Pass the phone to',
     player: 'seat {n}',
     holdToReveal: 'Hold to see your role',
-    doubleTapToCover: 'Double-tap the card when you are done',
-    wolves: 'Your fellow wolves',
-    wolvesNone: 'Meet your pack on the first night',
-    wolvesEmpty: 'No wolves you know of',
+    doubleTapToCover: 'Double-tap anywhere on the screen when you are done',
     progress: 'Player {i} of {n}',
     done: 'Everyone has seen their role',
     judgeView: 'Moderator view',
@@ -80,6 +70,5 @@ export default {
     replay: 'Replay',
     deleteConfirm: 'Delete this deal?',
     notFound: 'Deal not found',
-    vision: 'Wolf vision: {mode}',
   },
 } satisfies Shape<typeof zhTW>
