@@ -20,7 +20,6 @@ const roles = (b: Board) =>
 const rules = (b: Board) =>
   [
     zh.rules.win[b.rules.win],
-    `女巫：${zh.rules.witchSelfSave[b.rules.witchSelfSave]}`,
     `同守同救：${zh.rules.guardSaveConflict[b.rules.guardSaveConflict]}`,
     `警長：${b.rules.sheriff ? '有' : '無'}`,
     zh.rules.lastWords[b.rules.lastWords],

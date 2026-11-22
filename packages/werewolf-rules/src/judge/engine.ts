@@ -5,7 +5,7 @@
  */
 import { ROLES, type RoleId } from '../roles.ts'
 import { expandRoles } from '../table.ts'
-import { resolveOptions } from './options.ts'
+import { resolveOptions, witchMaySaveSelf } from './options.ts'
 import type {
   DeathCause,
   GameEvent,
@@ -82,10 +82,19 @@ export function seerResult(state: GameState, target: number): 'good' | 'wolf' {
 export function killers(state: GameState): Player[] {
   const pack = alive(state).filter(
     (p) =>
-      (p.role && PACK_ROLES.includes(p.role)) || (p.role === 'wildChild' && state.wildChildTurned),
+      (p.role && packRoles(state).includes(p.role)) ||
+      (p.role === 'wildChild' && state.wildChildTurned),
   )
   if (pack.length) return pack
-  return alive(state).filter((p) => p.role === 'hiddenWolf')
+  // The pack is out: wolves kept apart (隱狼, and 狼王 when he does not meet the pack) take over.
+  return alive(state).filter((p) => p.role === 'hiddenWolf' || p.role === 'wolfKing')
+}
+
+/** Roles that wake with the pack from the first night (狼王 only when he meets the pack). */
+export function packRoles(state: GameState): readonly RoleId[] {
+  return resolveOptions(state.setup.options).wolfKingMeetsPack
+    ? PACK_ROLES
+    : PACK_ROLES.filter((r) => r !== 'wolfKing')
 }
 
 /** Lovers from opposite sides (人狼戀) play for themselves, with 丘比特. */
@@ -110,13 +119,15 @@ export function mapSeat(tonight: Tonight, seat: number): number {
   return seat === a ? b : seat === b ? a : seat
 }
 
-export function canShoot(p: Player): boolean {
-  return (
-    (p.role === 'hunter' || p.role === 'wolfKing') &&
-    !p.alive &&
-    p.death !== null &&
-    !NO_SHOT_CAUSES.includes(p.death.cause)
+export function canShoot(state: GameState, p: Player): boolean {
+  if ((p.role !== 'hunter' && p.role !== 'wolfKing') || p.alive || !p.death) return false
+  if (
+    p.role === 'wolfKing' &&
+    p.death.cause === 'explode' &&
+    resolveOptions(state.setup.options).wolfKingShootAfterExplode
   )
+    return true
+  return !NO_SHOT_CAUSES.includes(p.death.cause)
 }
 
 /** Night deaths that may speak, by the board's rule. */
@@ -158,8 +169,7 @@ export function witchOptions(state: GameState, witch: Player | null): NonNullabl
   const told =
     (state.antidote || resolveOptions(state.setup.options).witchToldAfterAntidote) &&
     witch?.alive !== false
-  const rule = state.setup.rules.witchSelfSave
-  const selfOk = rule === 'always' || (rule === 'firstNight' && state.round === 1)
+  const selfOk = witchMaySaveSelf(resolveOptions(state.setup.options).witchSelfSave, state.round)
   const self = witch !== null && victim === witch.seat
   return {
     victim: told ? victim : null,
@@ -313,7 +323,7 @@ function nightStep(
     const anyKnown = state.players.some(
       (p) => p.role && (PACK_ROLES.includes(p.role) || p.role === 'hiddenWolf'),
     )
-    const expected = PACK_ROLES.reduce((n, r) => n + (state.setup.roles[r] ?? 0), 0)
+    const expected = packRoles(state).reduce((n, r) => n + (state.setup.roles[r] ?? 0), 0)
     return {
       ...step,
       identify: !anyKnown && expected > 0,
@@ -407,7 +417,7 @@ export function kill(state: GameState, seat: number, cause: DeathCause): void {
 function queueTriggers(state: GameState, seat: number) {
   const p = player(state, seat)
   if (state.sheriff === seat) state.pending.push({ kind: 'badge', seat })
-  if (canShoot(p)) state.pending.push({ kind: 'shoot', seat })
+  if (canShoot(state, p)) state.pending.push({ kind: 'shoot', seat })
 }
 
 function endGame(state: GameState, winner: Winner, manual: boolean) {

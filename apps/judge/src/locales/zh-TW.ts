@@ -31,6 +31,16 @@ export default {
     on: '開',
     off: '關',
     items: {
+      witchSelfSave: {
+        label: '女巫是否可以自救',
+        hint: '女巫被狼人殺害時，能不能用解藥救自己。',
+        choices: {
+          firstNight: '第一晚可以',
+          never: '都不行',
+          always: '都可以',
+          notFirstNight: '第一晚不行',
+        },
+      },
       witchToldAfterAntidote: {
         label: '解藥用完後仍告知女巫刀口',
         hint: '關閉時（預設），女巫用掉解藥後法官不再告訴她誰被殺。',
@@ -38,6 +48,14 @@ export default {
       guardSelf: {
         label: '守衛可以守自己',
         hint: '開啟時（預設），守衛可以選擇守護自己。',
+      },
+      wolfKingMeetsPack: {
+        label: '狼王與狼隊見面',
+        hint: '關閉時，狼王晚上不和狼人一起睜眼、不參與殺人，狼人也不知道他是誰；其他狼人全部出局後才加入殺人。使用角色發牌時，狼人視野請選「不顯示」。',
+      },
+      wolfKingShootAfterExplode: {
+        label: '狼王自爆後可以開槍',
+        hint: '開啟時，狼王在白天自爆後仍可以開槍帶走一名玩家。',
       },
     },
   },

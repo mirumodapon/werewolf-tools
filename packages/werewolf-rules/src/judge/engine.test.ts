@@ -134,14 +134,32 @@ describe('night deaths', () => {
     expect(g.step?.witch).toMatchObject({ victim: 9, told: true, canSave: true })
   })
 
-  it('lets the witch save herself on the first night only (default rule)', () => {
-    const first = ids(setup, night({ kill: 6 }).slice(0, 3))
-    expect(first.step?.witch?.canSave).toBe(true)
-    const never = ids(
-      known(GUARD_BOARD, { witchSelfSave: 'never' }),
-      night({ kill: 6 }).slice(0, 3),
-    )
-    expect(never.step?.witch?.canSave).toBe(false)
+  it('lets the witch save herself by the chosen option (never by default)', () => {
+    const withOption = (witchSelfSave: string) => ({
+      ...known(GUARD_BOARD),
+      options: { witchSelfSave },
+    })
+    const firstNight = (o: JudgeSetup) =>
+      ids(o, night({ kill: 6 }).slice(0, 3)).step?.witch?.canSave
+    expect(firstNight(setup)).toBe(false)
+    expect(firstNight(withOption('firstNight'))).toBe(true)
+    expect(firstNight(withOption('never'))).toBe(false)
+    expect(firstNight(withOption('always'))).toBe(true)
+    expect(firstNight(withOption('notFirstNight'))).toBe(false)
+  })
+
+  it('lets the witch save herself after night one when the option says 第一晚不行', () => {
+    const o = { ...known(GUARD_BOARD), options: { witchSelfSave: 'notFirstNight' } }
+    const g = ids(o, [
+      ...night({ kill: 9 }),
+      { step: 'sheriff', seat: null },
+      { step: 'deaths' },
+      { step: 'day', action: 'vote', exiled: null },
+      { step: 'dusk' },
+      { step: 'guard', target: null },
+      { step: 'wolves', kill: 6 },
+    ])
+    expect(g.step?.witch?.canSave).toBe(true)
   })
 
   it('refuses both potions on one night and repeating the guard', () => {
@@ -537,12 +555,16 @@ describe('advanced options', () => {
     const { optionsFor, resolveOptions, normalizeOptions } = await import('./options.ts')
     expect(optionsFor({ werewolf: 3, seer: 1, villager: 4 })).toEqual([])
     expect(optionsFor({ werewolf: 4, witch: 1, guard: 1, villager: 6 }).map((o) => o.id)).toEqual([
+      'witchSelfSave',
       'witchToldAfterAntidote',
       'guardSelf',
     ])
-    expect(resolveOptions({ guardSelf: false })).toEqual({
+    expect(resolveOptions({ guardSelf: false, witchSelfSave: 'bad' })).toEqual({
+      witchSelfSave: 'never',
       witchToldAfterAntidote: false,
       guardSelf: false,
+      wolfKingMeetsPack: true,
+      wolfKingShootAfterExplode: false,
     })
     expect(normalizeOptions({ guardSelf: 'yes', witchToldAfterAntidote: true, other: 1 })).toEqual({
       witchToldAfterAntidote: true,
@@ -571,5 +593,50 @@ describe('advanced options', () => {
       { step: 'guard', target: 8 },
     ])
     expect(refused.error?.message).toBe('the guard cannot protect himself')
+  })
+})
+
+describe('wolf king options', () => {
+  // 1–3 狼人, 4 狼王, 5 預言家, 6 女巫, 7 獵人, 8 守衛, 9–12 村民
+  const BOARD: RoleId[] = [
+    'werewolf',
+    'werewolf',
+    'werewolf',
+    'wolfKing',
+    'seer',
+    'witch',
+    'hunter',
+    'guard',
+    'villager',
+    'villager',
+    'villager',
+    'villager',
+  ]
+
+  it('keeps the wolf king away from the pack when he does not meet it', () => {
+    const together = ids(known(BOARD), [{ step: 'dusk' }, { step: 'guard', target: null }])
+    expect(together.step?.wolves).toEqual({ expected: 4, seats: [1, 2, 3, 4] })
+    const apart = ids({ ...known(BOARD), options: { wolfKingMeetsPack: false } }, [
+      { step: 'dusk' },
+      { step: 'guard', target: null },
+    ])
+    expect(apart.step?.wolves).toEqual({ expected: 3, seats: [1, 2, 3] })
+  })
+
+  it('lets the wolf king shoot after exploding only when chosen', () => {
+    const play = (options = {}) =>
+      ids({ ...known(BOARD, { sheriff: false }), options }, [
+        { step: 'dusk' },
+        { step: 'guard', target: null },
+        { step: 'wolves', kill: null },
+        { step: 'witch' },
+        { step: 'seer', target: null },
+        { step: 'hunter' },
+        { step: 'deaths' },
+        { step: 'day', action: 'explode', actor: 4 },
+      ])
+    expect(play().state).toMatchObject({ phase: 'night', round: 2 })
+    const shooting = play({ wolfKingShootAfterExplode: true })
+    expect(shooting.step).toMatchObject({ id: 'shoot', shooter: 4 })
   })
 })

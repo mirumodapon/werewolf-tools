@@ -40,6 +40,16 @@ export default {
     on: 'On',
     off: 'Off',
     items: {
+      witchSelfSave: {
+        label: 'May the witch save herself',
+        hint: 'Whether the witch may use the antidote on herself when the wolves attack her.',
+        choices: {
+          firstNight: 'Night one only',
+          never: 'Never',
+          always: 'Always',
+          notFirstNight: 'Not on night one',
+        },
+      },
       witchToldAfterAntidote: {
         label: 'Tell the witch the victim after her antidote is used',
         hint: 'When off (default), the witch is no longer told who was attacked once the antidote is gone.',
@@ -47,6 +57,14 @@ export default {
       guardSelf: {
         label: 'The guard may protect himself',
         hint: 'When on (default), the guard may choose himself.',
+      },
+      wolfKingMeetsPack: {
+        label: 'The wolf king meets the pack',
+        hint: 'When off, the wolf king does not wake with the wolves or join the kill, and the pack does not know him; he joins the kill once the rest of the pack is out. In Role Deal, set wolf vision to Hidden.',
+      },
+      wolfKingShootAfterExplode: {
+        label: 'The wolf king may shoot after exploding',
+        hint: 'When on, the wolf king may still take a player along after exploding by day.',
       },
     },
   },

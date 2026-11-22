@@ -4,7 +4,6 @@ import {
   LAST_WORDS,
   ROLE_IDS,
   WIN_CONDITIONS,
-  WITCH_SELF_SAVE,
   type BoardRules,
   type RoleCounts,
 } from '@werewolf/rules'
@@ -14,7 +13,8 @@ import { z } from 'zod'
 /** `/deal/?b=<payload>` (the moderator assistant accepts it too). */
 export const BOARD_PARAM = 'b'
 export const MAX_NAME_LENGTH = 40
-const VERSION = 1
+/** 2: the witch's self-save moved to the moderator's per-game options. */
+const VERSION = 2
 
 /** What a board link carries: name, cards and rules (no note, no id). */
 export interface SharedBoard {
@@ -25,7 +25,6 @@ export interface SharedBoard {
 
 const encodeRules = (r: BoardRules) => [
   WIN_CONDITIONS.indexOf(r.win),
-  WITCH_SELF_SAVE.indexOf(r.witchSelfSave),
   GUARD_SAVE_CONFLICT.indexOf(r.guardSaveConflict),
   r.sheriff ? 1 : 0,
   LAST_WORDS.indexOf(r.lastWords),
@@ -38,7 +37,6 @@ const payloadSchema = z.tuple([
   z.array(z.number().int().min(0).max(20)).max(ROLE_IDS.length),
   z.tuple([
     index(WIN_CONDITIONS.length - 1),
-    index(WITCH_SELF_SAVE.length - 1),
     index(GUARD_SAVE_CONFLICT.length - 1),
     index(1),
     index(LAST_WORDS.length - 1),
@@ -60,7 +58,7 @@ export async function encodeBoard(board: SharedBoard): Promise<string> {
 export async function decodeBoard(payload: string): Promise<SharedBoard> {
   const parsed = payloadSchema.safeParse(await decodePayload(payload))
   if (!parsed.success) throw new ShareError('not a board')
-  const [, name, counts, [win, selfSave, conflict, sheriff, lastWords]] = parsed.data
+  const [, name, counts, [win, conflict, sheriff, lastWords]] = parsed.data
   const roles: RoleCounts = {}
   counts.forEach((n, i) => (roles[ROLE_IDS[i]!] = n))
   return {
@@ -68,7 +66,6 @@ export async function decodeBoard(payload: string): Promise<SharedBoard> {
     roles: cleanCounts(roles),
     rules: {
       win: WIN_CONDITIONS[win]!,
-      witchSelfSave: WITCH_SELF_SAVE[selfSave]!,
       guardSaveConflict: GUARD_SAVE_CONFLICT[conflict]!,
       sheriff: sheriff === 1,
       lastWords: LAST_WORDS[lastWords]!,

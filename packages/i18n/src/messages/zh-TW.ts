@@ -74,12 +74,6 @@ export default {
       side: '狼人殺光所有神職或所有平民即獲勝',
       city: '狼人殺光所有好人才獲勝',
     },
-    witchSelfSave: {
-      label: '女巫自救',
-      never: '不能自救',
-      firstNight: '僅首夜可自救',
-      always: '可以自救',
-    },
     guardSaveConflict: { label: '同守同救', dies: '會死（奶穿）', lives: '不會死' },
     sheriff: { label: '警長競選', on: '有', off: '無' },
     lastWords: {

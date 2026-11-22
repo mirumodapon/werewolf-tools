@@ -21,7 +21,7 @@
 
 | 參數         | 工具               | 內容                                                            |
 | ------------ | ------------------ | --------------------------------------------------------------- |
-| `/deal/?b=`  | 角色發牌、法官輔助 | 板子：`[版本, 名稱, 依 ROLE_IDS 順序的張數, 設定]`              |
+| `/deal/?b=`  | 角色發牌、法官輔助 | 板子：`[版本 2, 名稱, 依 ROLE_IDS 順序的張數, 設定]`            |
 | `/judge/?t=` | 法官輔助           | 發牌交接：`[版本, 板子 id, 板子名稱, 設定, 每個座位的角色索引]` |
 | `/judge/?s=` | 法官輔助           | 整場遊戲紀錄（與 JSON 匯出相同的結構）                          |
 
@@ -42,14 +42,14 @@
     "roles": { "werewolf": 4, "seer": 1, "witch": 1, "hunter": 1, "guard": 1, "villager": 4 },
     "rules": {
       "win": "side",
-      "witchSelfSave": "firstNight",
       "guardSaveConflict": "dies",
       "sheriff": true,
       "lastWords": "firstNight",
     },
     "verified": false,
   },
-  "table": [{ "seat": 1, "role": "werewolf" }], // 開局已知的角色（從角色發牌交接）
+  "table": [{ "seat": 1, "role": "werewolf" }],
+  "options": { "witchSelfSave": "never", "wolfKingMeetsPack": true }, // 進階設定（沒寫的用預設） // 開局已知的角色（從角色發牌交接）
   "events": [
     // 法官的每一筆輸入
     { "step": "dusk" },

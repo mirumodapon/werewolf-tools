@@ -106,12 +106,6 @@ export default {
       side: 'Wolves win once every god or every villager is out',
       city: 'Wolves win once every good player is out',
     },
-    witchSelfSave: {
-      label: 'Witch saving herself',
-      never: 'Never',
-      firstNight: 'Night one only',
-      always: 'Always',
-    },
     guardSaveConflict: {
       label: 'Guarded and saved',
       dies: 'Dies',

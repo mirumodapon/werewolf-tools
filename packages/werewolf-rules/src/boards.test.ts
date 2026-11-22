@@ -34,7 +34,7 @@ describe('built-in boards', () => {
 describe('normalizeRules', () => {
   it('fills in missing or unknown settings', () => {
     expect(normalizeRules(null)).toEqual(DEFAULT_RULES)
-    expect(normalizeRules({ win: 'city', sheriff: false, witchSelfSave: 'x' })).toEqual({
+    expect(normalizeRules({ win: 'city', sheriff: false, lastWords: 'x' })).toEqual({
       ...DEFAULT_RULES,
       win: 'city',
       sheriff: false,
