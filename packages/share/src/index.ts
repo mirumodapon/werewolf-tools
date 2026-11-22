@@ -78,3 +78,13 @@ export function takeQueryParam(param: string, loc: Location = location): string 
   history.replaceState(history.state, '', `${loc.pathname}${rest ? `?${rest}` : ''}${loc.hash}`)
   return value
 }
+
+/**
+ * Makes a hash-routed app start on `route` (e.g. the preview of a shared link). Call it
+ * before creating the router: the router reads the address when it is created, so its
+ * first navigation goes straight there. (Navigating after creating it races that first
+ * navigation, and the start page can win.)
+ */
+export function startAt(route: string, loc: Location = location): void {
+  history.replaceState(history.state, '', `${loc.pathname}${loc.search}#${route}`)
+}
