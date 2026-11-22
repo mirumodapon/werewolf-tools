@@ -131,18 +131,39 @@ describe('UpdateGate', () => {
 })
 
 describe('noZoom', () => {
-  it('cancels the second touch of a double tap and pinch gestures', async () => {
+  const touchEnd = (target: EventTarget, timeStamp: number) => {
+    const e = new Event('touchend', { cancelable: true, bubbles: true })
+    Object.defineProperty(e, 'timeStamp', { value: timeStamp })
+    target.dispatchEvent(e)
+    return e.defaultPrevented
+  }
+
+  it('blocks the zoom of a quick second tap but still clicks what was tapped', async () => {
     const { noZoom } = await import('./noZoom.ts')
     const off = noZoom()
-    const touchEnd = (timeStamp: number) => {
-      const e = new Event('touchend', { cancelable: true })
-      Object.defineProperty(e, 'timeStamp', { value: timeStamp })
-      document.dispatchEvent(e)
-      return e.defaultPrevented
-    }
-    expect(touchEnd(1000)).toBe(false)
-    expect(touchEnd(1200)).toBe(true)
-    expect(touchEnd(3000)).toBe(false)
+    const a = document.createElement('button')
+    const b = document.createElement('button')
+    const clicks: string[] = []
+    a.addEventListener('click', () => clicks.push('a'))
+    b.addEventListener('click', () => clicks.push('b'))
+    document.body.append(a, b)
+    expect(touchEnd(a, 1000)).toBe(false)
+    // A fast tap on another button: zoom cancelled, the button still clicked.
+    expect(touchEnd(b, 1200)).toBe(true)
+    expect(clicks).toEqual(['b'])
+    expect(touchEnd(a, 3000)).toBe(false)
+    off()
+    a.remove()
+    b.remove()
+  })
+
+  it('leaves text fields alone and cancels pinch gestures', async () => {
+    const { noZoom } = await import('./noZoom.ts')
+    const off = noZoom()
+    const input = document.createElement('input')
+    document.body.append(input)
+    touchEnd(input, 1000)
+    expect(touchEnd(input, 1100)).toBe(false)
     const gesture = new Event('gesturestart', { cancelable: true })
     document.dispatchEvent(gesture)
     expect(gesture.defaultPrevented).toBe(true)
@@ -150,5 +171,6 @@ describe('noZoom', () => {
     const after = new Event('gesturestart', { cancelable: true })
     document.dispatchEvent(after)
     expect(after.defaultPrevented).toBe(false)
+    input.remove()
   })
 })
