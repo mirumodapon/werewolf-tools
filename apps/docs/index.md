@@ -3,7 +3,7 @@ layout: home
 hero:
   name: 狼人殺工具集
   text: 使用說明
-  tagline: 一支手機發牌、主持整場遊戲，所有工具都可以安裝成 App、離線使用。目前為 alpha 版本。
+  tagline: 一支手機發牌、主持整場遊戲，所有工具都可以安裝成 App、離線使用。
   actions:
     - theme: brand
       text: 開始使用

@@ -35,8 +35,10 @@ describe('registry', () => {
     expect(validateTools(tools)).toEqual([])
   })
 
-  it('marks every tool alpha', () => {
-    expect(tools.filter((t) => t.status !== 'alpha').map((t) => t.id)).toEqual([])
+  it('marks the tools alpha, but not home and the docs', () => {
+    expect(tools.filter((t) => t.status === 'alpha').map((t) => t.id)).toEqual(['deal', 'judge'])
+    expect(toolById('home').status).toBe('stable')
+    expect(toolById('docs').status).toBe('stable')
   })
 
   it('has an app folder for every built tool', () => {

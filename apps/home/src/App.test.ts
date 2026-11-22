@@ -18,11 +18,12 @@ async function mountHome(path = '/') {
 }
 
 describe('home', () => {
-  it('lists the tools, every one alpha', async () => {
+  it('lists the tools, alpha ones marked', async () => {
     const { w } = await mountHome()
     expect(w.find('[data-testid="tool-deal"]').attributes('href')).toBe('/deal/')
     expect(w.find('[data-testid="tool-judge"]').text()).toContain('法官輔助')
-    expect(w.findAll('[data-testid="status-alpha"]').length).toBe(4)
+    // deal and judge; home itself and the docs carry no badge.
+    expect(w.findAll('[data-testid="status-alpha"]').length).toBe(2)
   })
 
   it('marks the tools it opens, so their titles lead back home', async () => {

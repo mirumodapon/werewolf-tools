@@ -17,7 +17,7 @@ export const TOOLS = [
     path: '/',
     icon: 'moon-stars',
     accent: 'purple',
-    status: 'alpha',
+    status: 'stable',
   },
   {
     id: 'deal',
@@ -59,7 +59,7 @@ export const TOOLS = [
     path: '/docs/',
     icon: 'book',
     accent: 'teal',
-    status: 'alpha',
+    status: 'stable',
   },
   // new:app inserts here
 ] as const satisfies readonly ToolMeta[]
