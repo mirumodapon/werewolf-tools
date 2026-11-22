@@ -1,27 +1,24 @@
 <script setup lang="ts">
 import { RoleChips, RulesSummary, UnverifiedBadge } from '@werewolf/boards'
-import { shareUrl } from '@werewolf/share'
-import { AppShell, IconButton, ShareSheet, useConfirm } from '@werewolf/ui'
+import { AppShell, IconButton, useConfirm } from '@werewolf/ui'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AdvancedOptions from '../components/AdvancedOptions.vue'
+import ExportSheet from '../components/ExportSheet.vue'
 import SeatTable from '../components/SeatTable.vue'
 import Timeline from '../components/Timeline.vue'
-import { download } from '../download.ts'
 import { isVerified } from '../games/game.ts'
-import { encodeGame, exportJson, fileName, GAME_PARAM } from '../games/transfer.ts'
 import { useGamesStore } from '../stores/games.ts'
 import { useJudgeText } from '../useJudgeText.ts'
 
-/** A saved game: result, seats, timeline; rename, note, share, export, copy, delete. */
+/** A saved game: result, seats, timeline; rename, note, export (text, JSON, image, link), copy, delete. */
 const props = defineProps<{ id: string }>()
 const { t, gameName, boardName, formatDate } = useJudgeText()
 const router = useRouter()
 const store = useGamesStore()
 const confirm = useConfirm()
 const missing = ref(false)
-const shareOpen = ref(false)
-const link = ref('')
+const exportOpen = ref(false)
 
 onMounted(async () => {
   if (!(await store.open(props.id))) missing.value = true
@@ -36,17 +33,6 @@ const note = computed({
   get: () => game.value?.note ?? '',
   set: (v: string) => void store.setNote(v),
 })
-
-async function share() {
-  if (!game.value) return
-  link.value = ''
-  shareOpen.value = true
-  link.value = shareUrl(location.href, GAME_PARAM, await encodeGame(game.value))
-}
-
-function exportOne() {
-  if (game.value) download(fileName(gameName(game.value)), exportJson(game.value))
-}
 
 async function duplicate() {
   if (!game.value) return
@@ -77,10 +63,10 @@ async function remove() {
   >
     <template v-if="game" #actions>
       <IconButton
-        icon="i-tabler-share"
-        :label="t('detail.share')"
-        data-testid="share"
-        @click="share"
+        icon="i-tabler-file-export"
+        :label="t('export.title')"
+        data-testid="export"
+        @click="exportOpen = true"
       />
       <IconButton icon="i-tabler-trash" :label="t('common.delete')" @click="remove" />
     </template>
@@ -138,21 +124,20 @@ async function remove() {
       <Timeline :log="state.log" />
 
       <div class="flex flex-col gap-2">
-        <button type="button" class="h-12 rounded-xl bg-surface font-bold" @click="exportOne">
-          <span class="i-tabler-file-download mr-1 size-5" aria-hidden="true" />{{
-            t('detail.export')
+        <button
+          type="button"
+          class="h-12 rounded-xl bg-surface font-bold"
+          @click="exportOpen = true"
+        >
+          <span class="i-tabler-file-export mr-1 size-5" aria-hidden="true" />{{
+            t('export.title')
           }}
         </button>
         <button type="button" class="h-12 rounded-xl bg-surface font-bold" @click="duplicate">
           <span class="i-tabler-copy mr-1 size-5" aria-hidden="true" />{{ t('detail.duplicate') }}
         </button>
       </div>
-      <ShareSheet
-        v-model:open="shareOpen"
-        :title="t('detail.shareTitle')"
-        :name="gameName(game)"
-        :url="link"
-      />
+      <ExportSheet v-model:open="exportOpen" :game="game" />
     </template>
   </AppShell>
 </template>

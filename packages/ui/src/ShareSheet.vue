@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { renderSVG } from 'uqr'
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Sheet from './Sheet.vue'
 
-/** A share link as text and QR code, with copy and the system share sheet. */
+/** A share link to copy or hand to the system share sheet. */
 const open = defineModel<boolean>('open', { required: true })
 const props = defineProps<{ title: string; name: string; url: string }>()
 const { t } = useI18n()
@@ -12,11 +11,6 @@ const copied = ref(false)
 const canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function'
 
 watch(open, () => (copied.value = false))
-const qr = computed(() =>
-  props.url
-    ? renderSVG(props.url, { border: 2, whiteColor: '#ffffff', blackColor: '#1a1b26' })
-    : '',
-)
 
 async function copy() {
   await navigator.clipboard?.writeText(props.url)
@@ -37,9 +31,6 @@ async function share() {
     <p v-if="!url">{{ t('common.loading') }}</p>
     <template v-else>
       <p class="font-bold">{{ name }}</p>
-      <!-- eslint-disable-next-line vue/no-v-html -- SVG made locally by uqr from our own URL -->
-      <div class="mx-auto w-60 overflow-hidden rounded-xl" data-testid="share-qr" v-html="qr" />
-      <p class="text-center text-sm text-comment">{{ t('share.qr') }}</p>
       <input
         :value="url"
         readonly

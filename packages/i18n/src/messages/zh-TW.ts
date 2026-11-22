@@ -127,6 +127,5 @@ export default {
     copyLink: '複製連結',
     copied: '已複製',
     system: '用其他 App 分享',
-    qr: '用相機掃描 QR code 開啟',
   },
 } as const

@@ -163,6 +163,5 @@ export default {
     copyLink: 'Copy link',
     copied: 'Copied',
     system: 'Share via…',
-    qr: 'Scan the QR code with a camera to open it',
   },
 } satisfies Shape<typeof zhTW>

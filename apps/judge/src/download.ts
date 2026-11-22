@@ -1,6 +1,7 @@
-/** Saves text as a file (a download link the browser clicks for us). */
-export function download(name: string, text: string, type = 'application/json'): void {
-  const url = URL.createObjectURL(new Blob([text], { type }))
+/** Saves text or a blob as a file (a download link the browser clicks for us). */
+export function download(name: string, content: string | Blob, type = 'application/json'): void {
+  const blob = typeof content === 'string' ? new Blob([content], { type }) : content
+  const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
   a.download = name

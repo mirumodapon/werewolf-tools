@@ -14,7 +14,8 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { filterGames, type ResultFilter } from '../games/filter.ts'
 import { derive, type JudgeGame } from '../games/game.ts'
-import { exportJson, fileName, parseBackup } from '../games/transfer.ts'
+import ExportSheet from '../components/ExportSheet.vue'
+import { exportJson, parseBackup } from '../games/transfer.ts'
 import { useGamesStore } from '../stores/games.ts'
 import { useJudgeText } from '../useJudgeText.ts'
 import { download } from '../download.ts'
@@ -51,9 +52,18 @@ async function duplicate(g: JudgeGame) {
   await router.push(`/play/${copy.id}`)
 }
 
+/** The game whose export sheet is open. */
+const exporting = ref<JudgeGame | null>(null)
+const exportOpen = computed({
+  get: () => exporting.value !== null,
+  set: (open: boolean) => {
+    if (!open) exporting.value = null
+  },
+})
+
 function exportOne(g: JudgeGame) {
   acting.value = null
-  download(fileName(gameName(g)), exportJson(g))
+  exporting.value = g
 }
 
 async function remove(g: JudgeGame) {
@@ -192,8 +202,8 @@ async function importFile(e: Event) {
           class="h-12 rounded-xl bg-surface font-bold"
           @click="exportOne(acting)"
         >
-          <span class="i-tabler-file-download mr-1 size-5" aria-hidden="true" />{{
-            t('detail.export')
+          <span class="i-tabler-file-export mr-1 size-5" aria-hidden="true" />{{
+            t('export.title')
           }}
         </button>
         <button
@@ -206,6 +216,8 @@ async function importFile(e: Event) {
         </button>
       </div>
     </Sheet>
+
+    <ExportSheet v-model:open="exportOpen" :game="exporting" />
 
     <Sheet v-model:open="settingsOpen" :title="t('common.settings')">
       <ThemePicker />

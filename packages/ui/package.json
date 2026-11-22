@@ -16,7 +16,6 @@
     "@werewolf/storage": "workspace:*",
     "@werewolf/theme": "workspace:*",
     "pinia": "catalog:",
-    "uqr": "catalog:",
     "vue": "catalog:",
     "vue-i18n": "catalog:"
   },
