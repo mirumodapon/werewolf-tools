@@ -1,0 +1,25 @@
+{
+  "name": "@werewolf/pwa",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "vue-tsc -p tsconfig.json",
+    "icons": "node scripts/icons.ts"
+  },
+  "dependencies": {
+    "@werewolf/registry": "workspace:*",
+    "@werewolf/theme": "workspace:*",
+    "vite-plugin-pwa": "catalog:"
+  },
+  "devDependencies": {
+    "@iconify-json/tabler": "catalog:",
+    "@types/node": "catalog:",
+    "@vite-pwa/assets-generator": "catalog:",
+    "@werewolf/tsconfig": "workspace:*",
+    "vite-plus": "catalog:",
+    "workbox-window": "catalog:"
+  }
+}

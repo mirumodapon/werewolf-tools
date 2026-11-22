@@ -1,0 +1,31 @@
+{
+  "name": "@werewolf/ui",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./test/pwa-register-mock": "./src/test/pwa-register-mock.ts"
+  },
+  "scripts": {
+    "typecheck": "vue-tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@werewolf/i18n": "workspace:*",
+    "@werewolf/registry": "workspace:*",
+    "@werewolf/rules": "workspace:*",
+    "@werewolf/storage": "workspace:*",
+    "@werewolf/theme": "workspace:*",
+    "pinia": "catalog:",
+    "uqr": "catalog:",
+    "vue": "catalog:",
+    "vue-i18n": "catalog:"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "@werewolf/tsconfig": "workspace:*",
+    "jsdom": "catalog:",
+    "vite-plugin-pwa": "catalog:",
+    "workbox-window": "catalog:"
+  }
+}
