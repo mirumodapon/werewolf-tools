@@ -107,9 +107,11 @@ async function importFile(e: Event) {
         >
           <span class="flex items-center gap-2">
             <span class="min-w-0 flex-1 truncate font-bold">{{ gameName(g) }}</span>
-            <span class="text-sm" :class="status(g).ongoing ? 'text-cyan' : 'text-green'">{{
-              status(g).text
-            }}</span>
+            <span
+              class="shrink-0 text-sm whitespace-nowrap"
+              :class="status(g).ongoing ? 'text-cyan' : 'text-green'"
+              >{{ status(g).text }}</span
+            >
           </span>
           <span class="text-sm text-comment"
             >{{ formatDate(g.createdAt) }} · {{ boardName(g.board.name) }} ·
