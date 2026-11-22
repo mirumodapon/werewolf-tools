@@ -1,0 +1,5 @@
+{
+  "extends": "@werewolf/tsconfig/vue.json",
+  "compilerOptions": { "types": ["vite-plus/client", "node", "vite-plugin-pwa/vue"] },
+  "include": ["src", "vite.config.ts"]
+}

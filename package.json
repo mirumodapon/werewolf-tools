@@ -6,6 +6,10 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/dev.ts",
+    "dev:home": "pnpm --filter @werewolf/home dev",
+    "dev:deal": "pnpm --filter @werewolf/deal dev",
+    "dev:judge": "pnpm --filter @werewolf/judge dev",
+    "dev:docs": "pnpm --filter @werewolf/docs dev",
     "build": "node scripts/build-all.ts",
     "preview": "node scripts/preview.ts",
     "lint": "vp lint && node scripts/check-catalog.ts && node scripts/check-boundaries.ts && node scripts/check-version.ts && node scripts/check-i18n.ts",

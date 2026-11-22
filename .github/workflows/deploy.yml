@@ -1,0 +1,82 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; never cancel one in progress.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6 # version from "packageManager"
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Check
+        run: |
+          pnpm lint
+          pnpm format:check
+          pnpm typecheck
+          pnpm test
+
+      - id: pages
+        uses: actions/configure-pages@v6
+
+      # Every tool lives at the domain root (/, /deal/, /judge/, /docs/); a project-site
+      # sub-path would break links, manifests and service workers.
+      - name: Require deployment at the domain root
+        env:
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: |
+          if [ -n "$BASE_PATH" ] && [ "$BASE_PATH" != "/" ]; then
+            echo "::error::Pages serves this site under $BASE_PATH. Set the custom domain werewolf.mirumo.net (Settings → Pages)."
+            exit 1
+          fi
+
+      - name: Build all tools
+        run: pnpm build
+
+      - name: Summary
+        run: |
+          {
+            echo "### Deployed tools ($(node -p "require('./package.json').version"))"
+            echo
+            echo "| Path | App |"
+            echo "| --- | --- |"
+            for f in $(find dist -name manifest.webmanifest | sort); do
+              node -e "const m=JSON.parse(require('fs').readFileSync('$f','utf8'));console.log('| \`'+m.scope+'\` | '+m.name+' |')"
+            done
+            echo "| \`/docs/\` | 使用說明 |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

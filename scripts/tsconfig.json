@@ -1,0 +1,12 @@
+{
+  "extends": "../packages/tsconfig/base.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "lib": ["ES2023", "DOM"],
+    // Run by Node's type stripping: erasable syntax only.
+    "erasableSyntaxOnly": true
+  },
+  "include": ["**/*.ts"],
+  // The template is type-checked inside each generated app.
+  "exclude": ["templates"]
+}
