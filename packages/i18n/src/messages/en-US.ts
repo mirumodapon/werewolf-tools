@@ -142,6 +142,12 @@ export default {
     'en-US': 'English',
   },
   update: {
+    check: 'Check for updates',
+    result: {
+      found: 'New version found, updating…',
+      latest: 'You have the latest version',
+      unavailable: 'Cannot check for updates (offline or not installed)',
+    },
     checking: 'Checking for updates…',
     updating: 'Updating…',
   },

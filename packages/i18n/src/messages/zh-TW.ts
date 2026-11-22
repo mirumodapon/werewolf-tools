@@ -106,6 +106,12 @@ export default {
     'en-US': 'English',
   },
   update: {
+    check: '檢查更新',
+    result: {
+      found: '發現新版本，正在更新…',
+      latest: '已是最新版本',
+      unavailable: '無法檢查更新（離線或尚未安裝）',
+    },
     checking: '檢查更新中…',
     updating: '更新中…',
   },

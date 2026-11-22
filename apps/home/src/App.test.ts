@@ -40,6 +40,7 @@ describe('home', () => {
     for (const v of versions.slice(0, 3)) expect(shown).toContain(v)
     for (const v of versions.slice(3)) expect(shown).not.toContain(v)
     expect(w.find('[data-testid="full-changelog"]').attributes('href')).toBe('/docs/changelog')
+    expect(w.find('[data-testid="check-update"]').text()).toBe('檢查更新')
   })
 })
 

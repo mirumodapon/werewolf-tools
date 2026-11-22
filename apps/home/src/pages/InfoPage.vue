@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { manifestName, pwaTools, toolById, type Locale } from '@werewolf/registry'
-import { AppShell, StorageUsage } from '@werewolf/ui'
+import { AppShell, CheckUpdate, StorageUsage } from '@werewolf/ui'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import changelog from '../../../../CHANGELOG.md?raw'
@@ -19,6 +19,7 @@ const docs = toolById('docs').path
     <section class="flex flex-col gap-1 rounded-2xl border border-border bg-raised p-4">
       <h2 class="text-sm text-subtle">{{ t('info.version') }}</h2>
       <p class="font-mono" data-testid="version">{{ APP_VERSION }}</p>
+      <CheckUpdate />
     </section>
 
     <section class="flex flex-col gap-1 rounded-2xl border border-border bg-raised p-4">

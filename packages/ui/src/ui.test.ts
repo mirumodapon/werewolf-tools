@@ -174,3 +174,42 @@ describe('noZoom', () => {
     input.remove()
   })
 })
+
+describe('checkForUpdate', () => {
+  const nav = (registration: Partial<ServiceWorkerRegistration> | undefined, onLine = true) =>
+    ({
+      onLine,
+      serviceWorker: { getRegistration: async () => registration },
+    }) as unknown as Navigator
+
+  it('reports a new version once the worker updates into one', async () => {
+    const { checkForUpdate } = await import('./update.ts')
+    const r: Partial<ServiceWorkerRegistration> = { waiting: null, installing: null }
+    r.update = async () => {
+      Object.assign(r, { installing: {} })
+      return r as ServiceWorkerRegistration
+    }
+    expect(await checkForUpdate(nav(r))).toBe('found')
+  })
+
+  it('says latest when nothing new arrives, unavailable offline or without a worker', async () => {
+    const { checkForUpdate } = await import('./update.ts')
+    const r = { waiting: null, installing: null, update: async () => r } as never
+    expect(await checkForUpdate(nav(r))).toBe('latest')
+    expect(await checkForUpdate(nav(r, false))).toBe('unavailable')
+    expect(await checkForUpdate(nav(undefined))).toBe('unavailable')
+    expect(await checkForUpdate({} as Navigator)).toBe('unavailable')
+  })
+})
+
+describe('CheckUpdate', () => {
+  it('shows the result of the check', async () => {
+    const { default: CheckUpdate } = await import('./CheckUpdate.vue')
+    const w = mount(CheckUpdate, { ...options(), props: { check: async () => 'latest' as const } })
+    expect(w.find('[data-testid="check-update"]').text()).toBe('檢查更新')
+    await w.find('[data-testid="check-update"]').trigger('click')
+    await nextTick()
+    await nextTick()
+    expect(w.find('[data-testid="update-result"]').text()).toBe('已是最新版本')
+  })
+})

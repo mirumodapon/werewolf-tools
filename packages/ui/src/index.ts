@@ -1,5 +1,6 @@
 export { default as AppRoot } from './AppRoot.vue'
 export { default as AppShell } from './AppShell.vue'
+export { default as CheckUpdate } from './CheckUpdate.vue'
 export { default as BottomBar } from './BottomBar.vue'
 export { default as ConfirmHost } from './ConfirmHost.vue'
 export { default as IconButton } from './IconButton.vue'
