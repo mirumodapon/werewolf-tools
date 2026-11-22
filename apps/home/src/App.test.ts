@@ -1,6 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { installWerewolf, LAUNCHER_KEY } from '@werewolf/ui'
-import { describe, expect, it } from 'vite-plus/test'
+import { describe, expect, it, vi } from 'vite-plus/test'
 import { createMemoryHistory } from 'vue-router'
 import App from './App.vue'
 import { inlineParts, parseChangelog } from './changelog.ts'
@@ -59,5 +59,25 @@ describe('parseChangelog', () => {
       { code: true, text: 'b' },
       { code: false, text: ' c' },
     ])
+  })
+})
+
+describe('settings', () => {
+  it("deletes every tool's data after confirming", async () => {
+    localStorage.setItem('werewolf:global:boards', '{}')
+    localStorage.setItem('elsewhere', '1')
+    const reload = vi.fn()
+    vi.stubGlobal('location', { ...window.location, reload })
+    const { w } = await mountHome()
+    await w.find('button[aria-label="設定"]').trigger('click')
+    await flushPromises()
+    await w.find('[data-testid="reset-data"]').trigger('click')
+    await flushPromises()
+    await w.find('[data-testid="confirm-ok"]').trigger('click')
+    await vi.waitFor(() => expect(reload).toHaveBeenCalled())
+    expect(localStorage.getItem('werewolf:global:boards')).toBeNull()
+    expect(localStorage.getItem('elsewhere')).toBe('1')
+    vi.unstubAllGlobals()
+    w.unmount()
   })
 })

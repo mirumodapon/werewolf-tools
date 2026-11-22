@@ -152,6 +152,13 @@ export default {
     persisted: 'Persistent storage granted',
     notPersisted: 'The browser may clear data when space runs low',
   },
+  reset: {
+    title: 'Delete all data',
+    hint: 'Deletes every tool’s data on this device: custom boards, deals, game records and settings. This cannot be undone.',
+    confirm:
+      'Delete all data of every tool? Custom boards, deals, game records and settings will be gone for good.',
+    action: 'Delete all data',
+  },
   share: {
     copyLink: 'Copy link',
     copied: 'Copied',

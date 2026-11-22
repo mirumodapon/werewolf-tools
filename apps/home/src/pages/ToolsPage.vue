@@ -5,6 +5,7 @@ import {
   IconButton,
   LocalePicker,
   markLaunchedFromHome,
+  ResetData,
   Sheet,
   StatusBadge,
   ThemePicker,
@@ -74,6 +75,7 @@ const usable = (tool: ToolMeta) => tool.status !== 'coming-soon'
     <Sheet v-model:open="settingsOpen" :title="t('common.settings')">
       <ThemePicker />
       <LocalePicker />
+      <ResetData />
     </Sheet>
   </AppShell>
 </template>

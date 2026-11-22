@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import type { Locale } from '@werewolf/rules'
-import { AppShell, IconButton, LocalePicker, Segmented, Sheet, ThemePicker } from '@werewolf/ui'
+import {
+  AppShell,
+  IconButton,
+  LocalePicker,
+  ResetData,
+  Segmented,
+  Sheet,
+  ThemePicker,
+} from '@werewolf/ui'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { filterGames, type ResultFilter } from '../games/filter.ts'
@@ -142,6 +150,7 @@ async function importFile(e: Event) {
       <a href="/" class="text-sm text-blue underline"
         >{{ t('common.home') }} · {{ t('app.suite') }}</a
       >
+      <ResetData />
     </Sheet>
   </AppShell>
 </template>

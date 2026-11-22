@@ -159,3 +159,36 @@ export function onStoreChange(key: string, onChange: () => void): () => void {
   window.addEventListener('storage', listener)
   return () => window.removeEventListener('storage', listener)
 }
+
+/**
+ * Deletes everything the tools store on this device: every `werewolf:*` key (local and
+ * session storage) and the given IndexedDB databases, plus any other `werewolf-*`
+ * database the browser lists. Other sites' data is untouched. Open connections delay a
+ * database's deletion until the page reloads, which the caller should do next.
+ */
+export async function clearAllData(databases: readonly string[]): Promise<void> {
+  for (const key of keysWithPrefix(`${STORAGE_ROOT}:`)) removeStore(key)
+  try {
+    for (const key of Object.keys(sessionStorage))
+      if (key.startsWith(`${STORAGE_ROOT}:`)) sessionStorage.removeItem(key)
+  } catch {
+    // No session storage: nothing to clear there.
+  }
+  if (typeof indexedDB === 'undefined') return
+  const names = new Set(databases)
+  try {
+    for (const db of (await indexedDB.databases?.()) ?? [])
+      if (db.name?.startsWith(`${STORAGE_ROOT}-`)) names.add(db.name)
+  } catch {
+    // Older browsers cannot list databases: the known names are enough.
+  }
+  await Promise.all(
+    [...names].map(
+      (name) =>
+        new Promise<void>((resolve) => {
+          const request = indexedDB.deleteDatabase(name)
+          request.onsuccess = request.onerror = request.onblocked = () => resolve()
+        }),
+    ),
+  )
+}

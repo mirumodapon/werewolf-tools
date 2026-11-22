@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { AppShell, IconButton, LocalePicker, Segmented, Sheet, ThemePicker } from '@werewolf/ui'
+import {
+  AppShell,
+  IconButton,
+  LocalePicker,
+  ResetData,
+  Segmented,
+  Sheet,
+  ThemePicker,
+} from '@werewolf/ui'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
@@ -50,6 +58,7 @@ const speakerCount = computed(() => {
       <a href="/" class="text-sm text-blue underline"
         >{{ t('common.home') }} · {{ t('app.suite') }}</a
       >
+      <ResetData />
     </Sheet>
   </AppShell>
 </template>

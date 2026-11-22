@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import {
   appDatabaseName,
+  clearAllData,
   clearNamespace,
   formatBytes,
   globalKey,
@@ -88,6 +89,17 @@ describe('store', () => {
     clearNamespace('demo')
     expect(keysWithPrefix('werewolf:')).toEqual(['werewolf:global:theme'])
     expect(localStorage.getItem('other')).toBe('1')
+  })
+
+  it("clears every tool's data and nothing else", async () => {
+    localStorage.setItem('werewolf:global:theme', '{}')
+    localStorage.setItem('werewolf:judge:settings', '{}')
+    localStorage.setItem('other-site', '1')
+    sessionStorage.setItem('werewolf:launcher', 'home')
+    await clearAllData(['werewolf-judge'])
+    expect(keysWithPrefix('werewolf:')).toEqual([])
+    expect(localStorage.getItem('other-site')).toBe('1')
+    expect(sessionStorage.getItem('werewolf:launcher')).toBeNull()
   })
 
   it('hears changes made elsewhere', () => {
