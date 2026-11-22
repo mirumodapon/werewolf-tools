@@ -8,17 +8,21 @@ import {
   Segmented,
   Sheet,
   ThemePicker,
+  useConfirm,
 } from '@werewolf/ui'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { filterGames, type ResultFilter } from '../games/filter.ts'
 import { derive, type JudgeGame } from '../games/game.ts'
-import { exportJson, parseBackup } from '../games/transfer.ts'
+import { exportJson, fileName, parseBackup } from '../games/transfer.ts'
 import { useGamesStore } from '../stores/games.ts'
 import { useJudgeText } from '../useJudgeText.ts'
 import { download } from '../download.ts'
 
-/** Every game: search, filter by result, continue or open; backup in the settings. */
+/**
+ * Every game: search, filter by result, continue or open. Each row's ⋯ button offers
+ * open, a new game with the same setup, export and delete; backup is in the settings.
+ */
 const { t, lang, gameName, boardName, formatDate } = useJudgeText()
 const router = useRouter()
 const store = useGamesStore()
@@ -26,6 +30,41 @@ const settingsOpen = ref(false)
 const text = ref('')
 const result = ref<ResultFilter>('all')
 const message = ref('')
+const confirm = useConfirm()
+/** The game whose ⋯ options sheet is open. */
+const acting = ref<JudgeGame | null>(null)
+const actionsOpen = computed({
+  get: () => acting.value !== null,
+  set: (open: boolean) => {
+    if (!open) acting.value = null
+  },
+})
+
+function open(g: JudgeGame) {
+  acting.value = null
+  void router.push(status(g).ongoing ? `/play/${g.id}` : `/games/${g.id}`)
+}
+
+async function duplicate(g: JudgeGame) {
+  acting.value = null
+  const copy = await store.duplicate(g)
+  await router.push(`/play/${copy.id}`)
+}
+
+function exportOne(g: JudgeGame) {
+  acting.value = null
+  download(fileName(gameName(g)), exportJson(g))
+}
+
+async function remove(g: JudgeGame) {
+  acting.value = null
+  const ok = await confirm({
+    message: t('detail.deleteConfirm'),
+    confirmLabel: t('common.delete'),
+    danger: true,
+  })
+  if (ok) await store.remove(g.id)
+}
 onMounted(() => store.load())
 
 const RESULTS: ResultFilter[] = ['all', 'ongoing', 'good', 'wolf', 'third']
@@ -99,10 +138,10 @@ async function importFile(e: Event) {
       {{ t('list.noMatch') }}
     </p>
     <ul class="flex flex-col gap-2">
-      <li v-for="g in shown" :key="g.id">
+      <li v-for="g in shown" :key="g.id" class="flex items-stretch gap-1">
         <RouterLink
           :to="status(g).ongoing ? `/play/${g.id}` : `/games/${g.id}`"
-          class="flex flex-col gap-1 rounded-xl border border-border p-3 hover:border-purple"
+          class="flex min-w-0 flex-1 flex-col gap-1 rounded-xl border border-border p-3 hover:border-purple"
           data-testid="game"
         >
           <span class="flex items-center gap-2">
@@ -119,8 +158,54 @@ async function importFile(e: Event) {
           >
           <span v-if="g.note" class="truncate text-sm text-muted">{{ g.note }}</span>
         </RouterLink>
+        <button
+          type="button"
+          class="flex w-11 shrink-0 items-center justify-center rounded-xl border border-border text-comment hover:bg-raised"
+          :aria-label="t('list.more')"
+          :title="t('list.more')"
+          data-testid="game-more"
+          @click="acting = g"
+        >
+          <span class="i-tabler-dots-vertical size-5" aria-hidden="true" />
+        </button>
       </li>
     </ul>
+
+    <Sheet v-model:open="actionsOpen" :title="acting ? gameName(acting) : t('list.more')">
+      <div v-if="acting" class="flex flex-col gap-2" data-testid="game-actions">
+        <button type="button" class="h-12 rounded-xl bg-surface font-bold" @click="open(acting)">
+          <span
+            :class="status(acting).ongoing ? 'i-tabler-player-play' : 'i-tabler-file-text'"
+            class="mr-1 size-5"
+            aria-hidden="true"
+          />{{ status(acting).ongoing ? t('detail.continue') : t('list.open') }}
+        </button>
+        <button
+          type="button"
+          class="h-12 rounded-xl bg-surface font-bold"
+          @click="duplicate(acting)"
+        >
+          <span class="i-tabler-copy mr-1 size-5" aria-hidden="true" />{{ t('detail.duplicate') }}
+        </button>
+        <button
+          type="button"
+          class="h-12 rounded-xl bg-surface font-bold"
+          @click="exportOne(acting)"
+        >
+          <span class="i-tabler-file-download mr-1 size-5" aria-hidden="true" />{{
+            t('detail.export')
+          }}
+        </button>
+        <button
+          type="button"
+          class="h-12 rounded-xl border border-red font-bold text-red"
+          data-testid="game-delete"
+          @click="remove(acting)"
+        >
+          <span class="i-tabler-trash mr-1 size-5" aria-hidden="true" />{{ t('common.delete') }}
+        </button>
+      </div>
+    </Sheet>
 
     <Sheet v-model:open="settingsOpen" :title="t('common.settings')">
       <ThemePicker />

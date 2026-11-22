@@ -2,6 +2,8 @@
 export default {
   app: { title: '法官輔助', suite: '狼人殺工具集' },
   list: {
+    more: '更多選項',
+    open: '檢視紀錄',
     new: '新遊戲',
     search: '搜尋名稱、板子或備註',
     empty: '還沒有遊戲紀錄',

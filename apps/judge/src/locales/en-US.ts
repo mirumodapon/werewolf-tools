@@ -5,6 +5,8 @@ import type zhTW from './zh-TW.ts'
 export default {
   app: { title: 'Moderator', suite: 'Werewolf Tools' },
   list: {
+    more: 'More options',
+    open: 'View record',
     new: 'New game',
     search: 'Search names, boards or notes',
     empty: 'No games yet',
