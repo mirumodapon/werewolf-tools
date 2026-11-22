@@ -1,0 +1,35 @@
+packages:
+  - apps/*
+  - packages/*
+
+# External dependency versions live only here; package.json files say "catalog:".
+catalogMode: strict
+
+catalog:
+  '@iconify-json/tabler': '^1.2.46'
+  '@iconify/types': '^2.0.0'
+  '@types/node': '^26.6.6'
+  '@vite-pwa/assets-generator': '^2.0.0'
+  '@vitejs/plugin-vue': '^6.0.11'
+  '@vue/test-utils': '^2.6.0'
+  dexie: '^4.4.7'
+  fake-indexeddb: '^6.2.8'
+  jsdom: '^31.0.1'
+  pinia: '^4.1.0'
+  # vue-tsc (Volar) still needs the JavaScript TypeScript API that 7.x dropped.
+  typescript: '~6.0.3'
+  unocss: '^66.13.0'
+  uqr: '^0.1.3'
+  vite-plugin-pwa: '^2.0.0'
+  vite-plus: 1.7.0
+  vue: '^3.5.46'
+  vue-i18n: '^11.4.23'
+  vue-router: '^5.5.1'
+  vue-tsc: '^3.3.14'
+  workbox-window: '^7.4.1'
+  zod: '^4.6.7'
+
+# Vite+ bundles its own Vite and Vitest; plugins and tests must resolve those copies.
+overrides:
+  vite: 'npm:@voidzero-dev/vite-plus-core@8.3.8000'
+  vitest: 5.1.0

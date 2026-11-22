@@ -1,0 +1,16 @@
+{
+  "name": "@werewolf/registry",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "vue-tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@iconify-json/tabler": "catalog:",
+    "@types/node": "catalog:",
+    "@werewolf/tsconfig": "workspace:*"
+  }
+}

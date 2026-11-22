@@ -1,0 +1,8 @@
+{
+  "name": "@werewolf/tsconfig",
+  "private": true,
+  "files": [
+    "base.json",
+    "vue.json"
+  ]
+}

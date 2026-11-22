@@ -1,0 +1,16 @@
+{
+  "name": "@werewolf/licenses",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "vue-tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@werewolf/tsconfig": "workspace:*",
+    "vite-plus": "catalog:"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "@werewolf/i18n",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "vue-tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@werewolf/rules": "workspace:*",
+    "@werewolf/storage": "workspace:*",
+    "vue": "catalog:",
+    "vue-i18n": "catalog:"
+  },
+  "devDependencies": {
+    "@werewolf/tsconfig": "workspace:*",
+    "jsdom": "catalog:"
+  }
+}

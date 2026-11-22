@@ -1,0 +1,4 @@
+{
+  "extends": "@werewolf/tsconfig/vue.json",
+  "include": ["src", "vite.config.ts"]
+}

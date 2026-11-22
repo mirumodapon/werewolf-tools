@@ -1,0 +1,14 @@
+{
+  "name": "@werewolf/rules",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "vue-tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@werewolf/tsconfig": "workspace:*"
+  }
+}
