@@ -92,19 +92,49 @@ describe('BoardPicker', () => {
 })
 
 describe('handoff to the moderator', () => {
-  it('round-trips a dealt table', async () => {
+  const table = (roles: string[]) => roles.map((role, i) => ({ seat: i + 1, role: role as never }))
+
+  it('names a built-in board by id only and keeps the link short', async () => {
     const { decodeHandoff, encodeHandoff } = await import('./handoff.ts')
+    const { builtinBoard } = await import('@werewolf/rules')
+    const board = builtinBoard('b8-seer-witch-hunter')!
+    const seats = table([
+      'werewolf',
+      'seer',
+      'werewolf',
+      'villager',
+      'witch',
+      'werewolf',
+      'hunter',
+      'villager',
+    ])
+    const payload = await encodeHandoff({
+      boardId: board.id,
+      boardName: board.name,
+      roles: board.roles,
+      rules: board.rules,
+      table: seats,
+    })
+    expect(payload.length).toBeLessThan(60)
+    expect(await decodeHandoff(payload)).toEqual({
+      boardId: board.id,
+      boardName: board.name,
+      roles: board.roles,
+      rules: board.rules,
+      table: seats,
+    })
+  })
+
+  it('carries the name and rules of a custom board', async () => {
+    const { decodeHandoff, encodeHandoff } = await import('./handoff.ts')
+    const seats = table(['seer', 'werewolf'])
     const h = {
-      boardId: 'b8-seer-witch-hunter',
-      boardName: { 'zh-TW': '預女獵', 'en-US': 'Seer · Witch · Hunter' },
+      boardId: 'custom-1',
+      boardName: '我的板',
       roles: { werewolf: 1, seer: 1 },
       rules: SMALL_TABLE_RULES,
-      table: [
-        { seat: 2, role: 'seer' as const },
-        { seat: 1, role: 'werewolf' as const },
-      ],
+      table: seats,
     }
-    const back = await decodeHandoff(await encodeHandoff(h))
-    expect(back).toEqual({ ...h, table: [h.table[1], h.table[0]] })
+    expect(await decodeHandoff(await encodeHandoff(h))).toEqual(h)
   })
 })

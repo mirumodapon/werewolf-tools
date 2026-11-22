@@ -78,9 +78,17 @@ describe('games', () => {
 })
 
 describe('transfer', () => {
-  it('round-trips a game through a link', async () => {
+  it('round-trips a game through a link (as a new copy)', async () => {
     const g = game('a', { events: [{ step: 'dusk' }] })
-    expect(await decodeGame(await encodeGame(g))).toEqual(g)
+    const back = await decodeGame(await encodeGame(g))
+    // Its cards differ from the built-in board it names, so it travels as a custom board.
+    expect(back.board.id).toBeNull()
+    expect({
+      ...back,
+      id: 'a',
+      updatedAt: g.updatedAt,
+      board: { ...back.board, id: g.board.id },
+    }).toEqual(g)
   })
 
   it('reads one game or many from a backup and names the bad entry', () => {

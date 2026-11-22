@@ -1,17 +1,18 @@
-import { decodePayload, encodePayload, ShareError } from '@werewolf/share'
+import { ShareError } from '@werewolf/share'
+import { decodeGameLink, encodeGameLink } from './link.ts'
 import { parseGame, type JudgeGame } from './game.ts'
 
-/** `/judge/?s=<payload>`: a whole game in a link. */
+/** `/judge/?s=<payload>`: a whole game in a link (compact format, see link.ts). */
 export const GAME_PARAM = 's'
 
-export async function encodeGame(game: JudgeGame): Promise<string> {
-  return encodePayload(game)
-}
+export const encodeGame = (game: JudgeGame): Promise<string> => encodeGameLink(game)
 
 export async function decodeGame(payload: string): Promise<JudgeGame> {
-  const game = parseGame(await decodePayload(payload))
-  if (!game) throw new ShareError('not a game')
-  return game
+  try {
+    return await decodeGameLink(payload)
+  } catch (e) {
+    throw e instanceof ShareError ? e : new ShareError('not a game')
+  }
 }
 
 /** JSON backup: one game or an array of them. */

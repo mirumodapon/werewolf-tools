@@ -17,9 +17,18 @@ describe('share', () => {
     expect(await decodePayload(payload)).toEqual(value)
   })
 
+  it('picks the shorter of plain and compressed', async () => {
+    expect((await encodePayload([1, 2])).startsWith('j')).toBe(true)
+    const big = Array.from({ length: 200 }, () => 'werewolf')
+    const packed = await encodePayload(big)
+    expect(packed.startsWith('z')).toBe(true)
+    expect(await decodePayload(packed)).toEqual(big)
+  })
+
   it('rejects broken payloads', async () => {
     await expect(decodePayload('not valid!')).rejects.toBeInstanceOf(ShareError)
-    await expect(decodePayload('AAAA')).rejects.toBeInstanceOf(ShareError)
+    await expect(decodePayload('zAAAA')).rejects.toBeInstanceOf(ShareError)
+    await expect(decodePayload('xAAAA')).rejects.toBeInstanceOf(ShareError)
   })
 
   it('encodes base64url without padding', () => {

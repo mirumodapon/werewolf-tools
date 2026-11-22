@@ -1,6 +1,7 @@
 /**
- * Share links: a JSON value, deflate-raw compressed and base64url encoded, in one query
- * parameter (`/deal/?b=…`, `/judge/?s=…`). Each tool validates what it decodes.
+ * Share links: a JSON value, base64url encoded (deflate-raw compressed when that is
+ * shorter), in one query parameter (`/deal/?b=…`, `/judge/?s=…`). Each tool validates
+ * what it decodes and keeps its values compact (arrays of numbers, not objects).
  */
 
 export class ShareError extends Error {
@@ -28,15 +29,28 @@ async function through(bytes: Uint8Array, stream: ReadableWritablePair<Uint8Arra
   return new Uint8Array(await new Response(stream.readable).arrayBuffer())
 }
 
+/**
+ * The value as a link payload: `z` + deflate-raw + base64url, or `j` + base64url of the
+ * JSON itself when that is shorter (small values grow when compressed).
+ */
 export async function encodePayload(value: unknown): Promise<string> {
   const json = new TextEncoder().encode(JSON.stringify(value))
-  return toBase64Url(await through(json, new CompressionStream('deflate-raw')))
+  const plain = `j${toBase64Url(json)}`
+  const packed = `z${toBase64Url(await through(json, new CompressionStream('deflate-raw')))}`
+  return packed.length < plain.length ? packed : plain
 }
 
 /** The JSON value in a payload; throws ShareError when it is unreadable. */
 export async function decodePayload(payload: string): Promise<unknown> {
   try {
-    const bytes = await through(fromBase64Url(payload), new DecompressionStream('deflate-raw'))
+    const body = fromBase64Url(payload.slice(1))
+    const bytes =
+      payload[0] === 'z'
+        ? await through(body, new DecompressionStream('deflate-raw'))
+        : payload[0] === 'j'
+          ? body
+          : null
+    if (!bytes) throw new ShareError('unknown payload kind')
     return JSON.parse(new TextDecoder().decode(bytes))
   } catch {
     throw new ShareError('unreadable payload')
