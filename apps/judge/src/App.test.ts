@@ -67,7 +67,11 @@ describe('judge', () => {
     const { w, router } = await mountJudge('/new')
     expect(w.text()).toContain('已從角色發牌帶入座位與角色')
     expect(w.find('[data-testid="unverified"]').exists()).toBe(true)
-    await start(w, router)
+    expect(w.find('[data-testid="advanced-options"]').exists()).toBe(true)
+    expect(w.find('[data-testid="next"]').exists()).toBe(false)
+    await w.find('[data-testid="start"]').trigger('click')
+    await vi.waitFor(() => expect(router.currentRoute.value.path).toMatch(/^\/play\//))
+    await vi.waitFor(() => expect(w.find('[data-testid="step-title"]').exists()).toBe(true))
     expect(w.find('[data-testid="phase"]').text()).toBe('第 1 夜')
 
     await next(w) // 天黑請閉眼
@@ -144,8 +148,6 @@ describe('judge', () => {
       table: [],
     })
     const plain = await mountJudge('/new')
-    await plain.w.find('[data-testid="next"]').trigger('click')
-    await flushPromises()
     expect(plain.w.find('[data-testid="no-options"]').text()).toBe('無進階設定')
     plain.w.unmount()
   })

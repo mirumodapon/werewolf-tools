@@ -35,7 +35,8 @@ const router = useRouter()
 const settings = useSettingsStore()
 const boards = useBoardsStore()
 const games = useGamesStore()
-const stage = ref<'board' | 'options'>('board')
+// A deal handed over already fixes the board: go straight to the advanced settings.
+const stage = ref<'board' | 'options'>(props.handoff ? 'options' : 'board')
 const name = ref('')
 const options = ref<JudgeOptions>({})
 
@@ -68,7 +69,7 @@ function toOptions() {
 }
 
 function back() {
-  if (stage.value === 'options') stage.value = 'board'
+  if (stage.value === 'options' && !props.handoff) stage.value = 'board'
   else void router.push('/')
 }
 
@@ -134,6 +135,9 @@ async function start() {
     </template>
 
     <template v-else-if="selected">
+      <p v-if="handedBoard" class="flex items-center gap-2 text-green">
+        <span class="i-tabler-circle-check size-5" aria-hidden="true" />{{ t('setup.fromDeal') }}
+      </p>
       <div class="flex flex-col gap-2 rounded-xl border border-border p-3">
         <span class="flex items-center gap-2">
           <span class="flex-1 font-bold">{{ boardName(selected.name) }}</span>
