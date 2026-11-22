@@ -339,6 +339,7 @@ export default {
     footer: 'Werewolf Tools · Moderator',
   },
   import: {
+    shared: 'Someone shared this game record. Save it on this device if you want to keep it.',
     title: 'Import game record',
     action: 'Save on this device',
     invalid: 'This link does not contain a valid game record.',

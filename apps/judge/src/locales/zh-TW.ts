@@ -272,6 +272,7 @@ export default {
     footer: '狼人殺工具集・法官輔助',
   },
   import: {
+    shared: '有人分享了這場遊戲紀錄。看完後可以匯入到本機保存。',
     title: '匯入遊戲紀錄',
     action: '匯入到本機',
     invalid: '這個連結不是有效的遊戲紀錄。',
