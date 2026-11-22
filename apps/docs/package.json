@@ -1,0 +1,25 @@
+{
+  "name": "@werewolf/docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview",
+    "typecheck": "vue-tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@werewolf/i18n": "workspace:*",
+    "@werewolf/registry": "workspace:*",
+    "@werewolf/rules": "workspace:*",
+    "@werewolf/theme": "workspace:*",
+    "vue": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@werewolf/licenses": "workspace:*",
+    "@werewolf/tsconfig": "workspace:*",
+    "vite-plus": "catalog:",
+    "vitepress": "catalog:"
+  }
+}

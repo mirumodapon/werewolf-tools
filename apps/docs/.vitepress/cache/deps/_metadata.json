@@ -1,0 +1,32 @@
+{
+  "hash": "ed3a169a",
+  "configHash": "ee5e7105",
+  "lockfileHash": "b0080fcb",
+  "browserHash": "ae42f488",
+  "optimized": {
+    "vitepress > @vue/devtools-api": {
+      "src": "../../../../../node_modules/.pnpm/@vue+devtools-api@8.2.1/node_modules/@vue/devtools-api/dist/index.js",
+      "file": "vitepress_n_@vue_devtools-api.js",
+      "fileHash": "9eed0e60",
+      "needsInterop": false
+    },
+    "vitepress > @vueuse/core": {
+      "src": "../../../../../node_modules/.pnpm/@vueuse+core@15.0.0_vue@3.5.46_typescript@6.0.3_/node_modules/@vueuse/core/dist/index.js",
+      "file": "vitepress_n_@vueuse_core.js",
+      "fileHash": "4f1e8a2b",
+      "needsInterop": false
+    },
+    "vue": {
+      "src": "../../../../../node_modules/.pnpm/vue@3.5.46_typescript@6.0.3/node_modules/vue/dist/vue.runtime.esm-bundler.js",
+      "file": "vue.js",
+      "fileHash": "b4392998",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "vue.runtime.esm-bundler-CXEmOtPv": {
+      "file": "vue.runtime.esm-bundler-CXEmOtPv.js",
+      "isDynamicEntry": false
+    }
+  }
+}

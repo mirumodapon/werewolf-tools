@@ -1,0 +1,58 @@
+/* Tokyo Night (the tools' palette) on VitePress's variables. */
+:root {
+  --vp-c-bg: #e6e7ed;
+  --vp-c-bg-alt: #d6d8df;
+  --vp-c-bg-soft: #f0f0f4;
+  --vp-c-text-1: #343b58;
+  --vp-c-text-2: #4c505e;
+  --vp-c-text-3: #6c6e75;
+  --vp-c-divider: #a8aecb;
+  --vp-c-brand-1: #5a3e8e;
+  --vp-c-brand-2: #2959aa;
+  --vp-c-brand-3: #5a3e8e;
+  --vp-font-family-base: system-ui, -apple-system, 'PingFang TC', 'Noto Sans TC', sans-serif;
+}
+.dark {
+  --vp-c-bg: #1a1b26;
+  --vp-c-bg-alt: #16161e;
+  --vp-c-bg-soft: #24283b;
+  --vp-c-text-1: #c0caf5;
+  --vp-c-text-2: #a9b1d6;
+  --vp-c-text-3: #565f89;
+  --vp-c-divider: #414868;
+  --vp-c-brand-1: #bb9af7;
+  --vp-c-brand-2: #7aa2f7;
+  --vp-c-brand-3: #bb9af7;
+}
+.ww-wolf {
+  color: #f7768e;
+}
+.ww-god {
+  color: #7aa2f7;
+}
+.ww-village {
+  color: #9ece6a;
+}
+.ww-third {
+  color: #e0af68;
+}
+.ww-unverified {
+  color: #ff9e64;
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+html:not(.dark) .ww-wolf {
+  color: #8c4351;
+}
+html:not(.dark) .ww-god {
+  color: #2959aa;
+}
+html:not(.dark) .ww-village {
+  color: #385f0d;
+}
+html:not(.dark) .ww-third {
+  color: #8f5e15;
+}
+html:not(.dark) .ww-unverified {
+  color: #965027;
+}

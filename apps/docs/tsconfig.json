@@ -1,0 +1,6 @@
+{
+  "extends": "@werewolf/tsconfig/vue.json",
+  "compilerOptions": { "types": ["node", "vite-plus/client"] },
+  "include": [".vitepress/**/*.ts", ".vitepress/**/*.vue", "vite.config.ts"],
+  "exclude": [".vitepress/cache", "dist"]
+}

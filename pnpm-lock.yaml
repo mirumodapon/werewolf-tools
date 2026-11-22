@@ -344,7 +344,35 @@ importers:
         version: 7.4.1
 
   apps/docs:
+    dependencies:
+      '@werewolf/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
+      '@werewolf/registry':
+        specifier: workspace:*
+        version: link:../../packages/registry
+      '@werewolf/rules':
+        specifier: workspace:*
+        version: link:../../packages/werewolf-rules
+      '@werewolf/theme':
+        specifier: workspace:*
+        version: link:../../packages/theme
+      vue:
+        specifier: 'catalog:'
+        version: 3.5.46(typescript@6.0.3)
     devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 26.6.6
+      '@werewolf/licenses':
+        specifier: workspace:*
+        version: link:../../packages/licenses
+      '@werewolf/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
+      vite-plus:
+        specifier: 'catalog:'
+        version: 1.7.0(@types/node@26.6.6)(@vitest/ui@5.1.0)(@volar/typescript@2.4.30(typescript@6.0.3))(@vue/language-core@3.3.14)(jiti@2.7.0)(jsdom@31.0.1)(terser@5.51.4)(typescript@6.0.3)(vue-tsc@3.3.14(typescript@6.0.3))
       vitepress:
         specifier: 'catalog:'
         version: 2.0.0-alpha.21(@types/node@26.6.6)(@volar/typescript@2.4.30(typescript@6.0.3))(@vue/language-core@3.3.14)(jiti@2.7.0)(postcss@8.5.33)(terser@5.51.4)(typescript@6.0.3)(vue-tsc@3.3.14(typescript@6.0.3))
