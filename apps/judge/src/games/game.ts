@@ -3,12 +3,14 @@ import {
   deriveGame,
   isRoleId,
   LOCALES,
+  normalizeOptions,
   normalizeRules,
   ROLE_IDS,
   type Board,
   type BoardRules,
   type DerivedGame,
   type GameEvent,
+  type JudgeOptions,
   type JudgeSetup,
   type Localized,
   type RoleCounts,
@@ -42,6 +44,8 @@ export interface JudgeGame {
   board: GameBoard
   /** Cards known from the start (handed over from the deal tool). */
   table: SeatRole[]
+  /** Advanced settings chosen in the setup stage (only those the board offers). */
+  options: JudgeOptions
   events: GameEvent[]
 }
 
@@ -49,6 +53,7 @@ export const setupOf = (game: JudgeGame): JudgeSetup => ({
   roles: game.board.roles,
   rules: game.board.rules,
   table: game.table,
+  options: game.options,
 })
 
 export const derive = (game: JudgeGame): DerivedGame => deriveGame(setupOf(game), game.events)
@@ -120,6 +125,7 @@ export const gameSchema = z.object({
     verified: z.boolean().catch(false),
   }),
   table: z.array(z.object({ seat, role: z.string().refine(isRoleId) })),
+  options: z.unknown().optional(),
   events: z.array(eventSchema),
 })
 
@@ -130,5 +136,6 @@ export function parseGame(value: unknown): JudgeGame | null {
   return {
     ...parsed.data,
     board: { ...parsed.data.board, rules: normalizeRules(parsed.data.board.rules) },
+    options: normalizeOptions(parsed.data.options),
   } as JudgeGame
 }

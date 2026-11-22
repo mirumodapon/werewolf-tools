@@ -25,12 +25,30 @@ export default {
     importFailed: 'Import failed: {reason}',
   },
   setup: {
+    stages: { board: 'Board', options: 'Advanced settings' },
+    next: 'Next',
     title: 'New game',
     fromDeal: 'Seats and roles came from Role Deal',
     unknownTable: 'You will tap who wakes up on the first night; seats nobody taps are villagers.',
     name: 'Game name (optional)',
     start: 'Start',
     deal: 'Open Role Deal',
+  },
+  options: {
+    title: 'Advanced settings',
+    none: 'No advanced settings',
+    on: 'On',
+    off: 'Off',
+    items: {
+      witchToldAfterAntidote: {
+        label: 'Tell the witch the victim after her antidote is used',
+        hint: 'When off (default), the witch is no longer told who was attacked once the antidote is gone.',
+      },
+      guardSelf: {
+        label: 'The guard may protect himself',
+        hint: 'When on (default), the guard may choose himself.',
+      },
+    },
   },
   phase: { night: 'night', day: 'day' },
   play: {

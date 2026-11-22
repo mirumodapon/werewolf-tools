@@ -5,6 +5,7 @@
  */
 import { ROLES, type RoleId } from '../roles.ts'
 import { expandRoles } from '../table.ts'
+import { resolveOptions } from './options.ts'
 import type {
   DeathCause,
   GameEvent,
@@ -148,12 +149,15 @@ export function checkWinner(state: GameState): Winner | null {
 
 /**
  * What the witch is told and may do. After the antidote is gone she is no longer told
+ * (unless the `witchToldAfterAntidote` option says so)
  * who was attacked. Pass the witch's seat once known (night 1 identifies her first).
  */
 export function witchOptions(state: GameState, witch: Player | null): NonNullable<Step['witch']> {
   const t = state.tonight
   const victim = t.kill === null ? null : mapSeat(t, t.kill)
-  const told = state.antidote && witch?.alive !== false
+  const told =
+    (state.antidote || resolveOptions(state.setup.options).witchToldAfterAntidote) &&
+    witch?.alive !== false
   const rule = state.setup.rules.witchSelfSave
   const selfOk = rule === 'always' || (rule === 'firstNight' && state.round === 1)
   const self = witch !== null && victim === witch.seat
@@ -162,7 +166,7 @@ export function witchOptions(state: GameState, witch: Player | null): NonNullabl
     told,
     antidote: state.antidote,
     poison: state.poison,
-    canSave: told && victim !== null && (!self || selfOk),
+    canSave: state.antidote && told && victim !== null && (!self || selfOk),
   }
 }
 
@@ -174,6 +178,7 @@ export function initialState(input: JudgeSetup): GameState {
     roles: { ...input.roles },
     rules: { ...input.rules },
     table: input.table.map((s) => ({ seat: s.seat, role: s.role })),
+    options: { ...input.options },
   }
   const count = expandRoles(setup.roles).length
   const known = new Map(setup.table.map((s) => [s.seat, s.role]))
@@ -537,6 +542,11 @@ function applyNight(state: GameState, event: GameEvent, step: Step) {
         seatOk(state, target)
         if (target === state.guardLast)
           throw new JudgeError('cannot guard the same seat twice in a row')
+        if (
+          !resolveOptions(state.setup.options).guardSelf &&
+          target === holder(state, 'guard')?.seat
+        )
+          throw new JudgeError('the guard cannot protect himself')
       }
       t.guard = target
       log(state, { kind: 'guard', target })

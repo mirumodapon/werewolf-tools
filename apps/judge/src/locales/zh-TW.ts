@@ -16,12 +16,30 @@ export default {
     importFailed: '匯入失敗：{reason}',
   },
   setup: {
+    stages: { board: '選擇板子', options: '進階設定' },
+    next: '下一步',
     title: '新遊戲',
     fromDeal: '已從角色發牌帶入座位與角色',
     unknownTable: '座位與角色會在第一晚依序點選睜眼的玩家；沒有被點到的座位是村民。',
     name: '遊戲名稱（可留空）',
     start: '開始遊戲',
     deal: '到角色發牌',
+  },
+  options: {
+    title: '進階設定',
+    none: '無進階設定',
+    on: '開',
+    off: '關',
+    items: {
+      witchToldAfterAntidote: {
+        label: '解藥用完後仍告知女巫刀口',
+        hint: '關閉時（預設），女巫用掉解藥後法官不再告訴她誰被殺。',
+      },
+      guardSelf: {
+        label: '守衛可以守自己',
+        hint: '開啟時（預設），守衛可以選擇守護自己。',
+      },
+    },
   },
   phase: { night: '夜', day: '天' },
   play: {

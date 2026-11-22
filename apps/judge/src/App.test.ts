@@ -27,6 +27,8 @@ async function start(
   w: Awaited<ReturnType<typeof mountJudge>>['w'],
   router: Awaited<ReturnType<typeof mountJudge>>['router'],
 ) {
+  await w.find('[data-testid="next"]').trigger('click')
+  await flushPromises()
   await w.find('[data-testid="start"]').trigger('click')
   await vi.waitFor(() => expect(router.currentRoute.value.path).toMatch(/^\/play\//))
   await vi.waitFor(() => expect(w.find('[data-testid="step-title"]').exists()).toBe(true))
@@ -113,6 +115,8 @@ describe('judge', () => {
     const first = await mountJudge('/new')
     await first.w.find('[data-testid="count-8"]').trigger('click')
     await flushPromises()
+    await first.w.find('[data-testid="next"]').trigger('click')
+    await flushPromises()
     await first.w.find('[data-testid="start"]').trigger('click')
     await flushPromises()
     first.w.unmount()
@@ -120,5 +124,29 @@ describe('judge', () => {
     expect(w.findAll('[data-testid="game"]')).toHaveLength(1)
     expect(w.find('[data-testid="game"]').text()).toContain('第1場')
     w.unmount()
+  })
+
+  it('shows the advanced settings the board offers, or none', async () => {
+    const { w } = await mountJudge('/new')
+    await w.find('[data-testid="count-8"]').trigger('click')
+    await flushPromises()
+    await w.find('[data-testid="next"]').trigger('click')
+    await flushPromises()
+    expect(w.find('[data-testid="option-witchToldAfterAntidote"]').exists()).toBe(true)
+    expect(w.find('[data-testid="option-guardSelf"]').exists()).toBe(false)
+    w.unmount()
+
+    setPendingHandoff({
+      boardId: null,
+      boardName: '只有預言家',
+      roles: { werewolf: 2, seer: 1, villager: 5 },
+      rules: DEFAULT_RULES,
+      table: [],
+    })
+    const plain = await mountJudge('/new')
+    await plain.w.find('[data-testid="next"]').trigger('click')
+    await flushPromises()
+    expect(plain.w.find('[data-testid="no-options"]').text()).toBe('無進階設定')
+    plain.w.unmount()
   })
 })

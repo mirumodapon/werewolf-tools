@@ -4,6 +4,7 @@ import { shareUrl } from '@werewolf/share'
 import { AppShell, IconButton, ShareSheet, useConfirm } from '@werewolf/ui'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import AdvancedOptions from '../components/AdvancedOptions.vue'
 import SeatTable from '../components/SeatTable.vue'
 import Timeline from '../components/Timeline.vue'
 import { download } from '../download.ts'
@@ -128,6 +129,8 @@ async function remove() {
           class="rounded-lg border border-border bg-bg px-3 py-2"
         />
       </label>
+
+      <AdvancedOptions :model-value="game.options" :roles="game.board.roles" readonly />
 
       <h2 class="text-sm text-subtle">{{ t('seats.title') }}</h2>
       <SeatTable :state="state" />

@@ -531,3 +531,45 @@ describe('identifying cards on night 1', () => {
     expect(g.state).toMatchObject({ phase: 'ended', winner: 'good' })
   })
 })
+
+describe('advanced options', () => {
+  it('apply only to boards with their roles', async () => {
+    const { optionsFor, resolveOptions, normalizeOptions } = await import('./options.ts')
+    expect(optionsFor({ werewolf: 3, seer: 1, villager: 4 })).toEqual([])
+    expect(optionsFor({ werewolf: 4, witch: 1, guard: 1, villager: 6 }).map((o) => o.id)).toEqual([
+      'witchToldAfterAntidote',
+      'guardSelf',
+    ])
+    expect(resolveOptions({ guardSelf: false })).toEqual({
+      witchToldAfterAntidote: false,
+      guardSelf: false,
+    })
+    expect(normalizeOptions({ guardSelf: 'yes', witchToldAfterAntidote: true, other: 1 })).toEqual({
+      witchToldAfterAntidote: true,
+    })
+  })
+
+  it('keep telling the witch the victim after the antidote when chosen', () => {
+    const setup = { ...known(GUARD_BOARD), options: { witchToldAfterAntidote: true } }
+    const g = ids(setup, [
+      ...night({ kill: 9, save: true }),
+      { step: 'sheriff', seat: null },
+      { step: 'deaths' },
+      { step: 'day', action: 'vote', exiled: null },
+      { step: 'dusk' },
+      { step: 'guard', target: null },
+      { step: 'wolves', kill: 10 },
+    ])
+    expect(g.step?.witch).toMatchObject({ told: true, victim: 10, canSave: false })
+  })
+
+  it('stop the guard protecting himself when not allowed', () => {
+    const allowed = deriveGame(known(GUARD_BOARD), [{ step: 'dusk' }, { step: 'guard', target: 8 }])
+    expect(allowed.error).toBeNull()
+    const refused = deriveGame({ ...known(GUARD_BOARD), options: { guardSelf: false } }, [
+      { step: 'dusk' },
+      { step: 'guard', target: 8 },
+    ])
+    expect(refused.error?.message).toBe('the guard cannot protect himself')
+  })
+})

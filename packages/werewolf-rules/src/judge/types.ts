@@ -1,4 +1,5 @@
 import type { BoardRules } from '../boardRules.ts'
+import type { JudgeOptions } from './options.ts'
 import type { RoleId } from '../roles.ts'
 import type { RoleCounts, SeatRole } from '../table.ts'
 
@@ -8,6 +9,8 @@ export interface JudgeSetup {
   rules: BoardRules
   /** Cards already known (e.g. handed over from the deal tool). The rest are found on night 1. */
   table: SeatRole[]
+  /** Advanced settings chosen before the game (see options.ts). */
+  options?: JudgeOptions
 }
 
 export type Side = 'good' | 'wolf' | 'third'

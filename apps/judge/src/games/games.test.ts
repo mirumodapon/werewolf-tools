@@ -25,6 +25,7 @@ const game = (id: string, extra: Partial<JudgeGame> = {}): JudgeGame => ({
     { seat: 1, role: 'werewolf' },
     { seat: 2, role: 'seer' },
   ],
+  options: {},
   events: [],
   ...extra,
 })

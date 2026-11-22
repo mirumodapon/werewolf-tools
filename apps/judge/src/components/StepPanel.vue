@@ -2,6 +2,7 @@
 import {
   mapSeat,
   PACK_ROLES,
+  resolveOptions,
   player,
   seerResult,
   witchOptions,
@@ -349,6 +350,11 @@ function chooseDayAction(action: 'vote' | 'explode' | 'duel') {
           :dead="step.id === 'seer' ? [] : dead"
           :disabled="[
             ...(step.id === 'guard' && step.guardForbidden != null ? [step.guardForbidden] : []),
+            ...(step.id === 'guard' &&
+            !resolveOptions(state.setup.options).guardSelf &&
+            acting !== null
+              ? [acting]
+              : []),
             ...(['mixedBlood', 'wildChild', 'wolfBeauty', 'seer'].includes(step.id) &&
             acting !== null
               ? [acting]

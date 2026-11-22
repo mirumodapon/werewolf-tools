@@ -27,6 +27,15 @@ builtin({
 5. 若有夜晚行動或白天技能：法官規則引擎（`judge/types.ts` 的步驟與事件、`engine.ts` 的 `nightPlan` 與套用邏輯）、法官輔助的 `StepPanel.vue` 與台詞（`apps/judge/src/locales`），並在 `engine.test.ts` 加情境測試。
 6. 更新使用說明的[角色](/rules/roles)補充說明（表格會自動更新）與[夜晚順序](/rules/night-order)。
 
+## 新增法官輔助的進階設定
+
+進階設定是每一局開始前選擇、依板子角色出現的選項：
+
+1. `packages/werewolf-rules/src/judge/options.ts`：在 `OPTION_IDS` 加 id，在 `ADVANCED_OPTIONS` 加一筆（`roles`：板子有其中任一角色才顯示；`default`：預設值）。
+2. 規則引擎用 `resolveOptions(state.setup.options).<id>` 讀取，並在 `engine.test.ts` 補情境測試。
+3. `apps/judge/src/locales/*.ts` 的 `options.items.<id>.label` 與 `hint`。
+4. 更新本說明的[法官輔助](/guide/judge#進階設定)表格。
+
 ## 翻譯
 
 - 共用文案：`packages/i18n/src/messages/`；各工具：`apps/<id>/src/locales/`。

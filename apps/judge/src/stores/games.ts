@@ -1,5 +1,5 @@
 import type { Handoff } from '@werewolf/boards'
-import type { Board, GameEvent, Winner } from '@werewolf/rules'
+import type { Board, GameEvent, JudgeOptions, Winner } from '@werewolf/rules'
 import { newId } from '@werewolf/storage'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -29,7 +29,12 @@ export const useGamesStore = defineStore('games', () => {
     else games.value[i] = clone(game)
   }
 
-  async function create(board: Board, handoff?: Handoff, now = Date.now()): Promise<JudgeGame> {
+  async function create(
+    board: Board,
+    handoff?: Handoff,
+    options: JudgeOptions = {},
+    now = Date.now(),
+  ): Promise<JudgeGame> {
     if (!loaded.value) await load()
     const game: JudgeGame = {
       schemaVersion: SCHEMA_VERSION,
@@ -43,6 +48,7 @@ export const useGamesStore = defineStore('games', () => {
         ? { ...boardOf(board), name: handoff.boardName, roles: handoff.roles, rules: handoff.rules }
         : boardOf(board),
       table: handoff?.table ?? [],
+      options: { ...options },
       events: [],
     }
     await save(game)
