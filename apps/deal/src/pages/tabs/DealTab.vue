@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { BottomBar } from '@werewolf/ui'
 import { BoardPicker, useBoardsStore, useBoardText } from '@werewolf/boards'
 import { BUILTIN_BOARDS, checkBoard, hasErrors, playerCount } from '@werewolf/rules'
 import { computed } from 'vue'
@@ -55,13 +56,15 @@ async function start() {
     </template>
   </BoardPicker>
 
-  <button
-    type="button"
-    class="sticky bottom-4 mt-2 flex h-14 items-center justify-center gap-2 rounded-2xl bg-purple text-lg font-bold text-bg shadow-lg disabled:opacity-40"
-    data-testid="start"
-    :disabled="blocked"
-    @click="start"
-  >
-    <span class="i-tabler-cards size-6" aria-hidden="true" />{{ t('deal.start') }}
-  </button>
+  <BottomBar>
+    <button
+      type="button"
+      class="w-full flex h-14 items-center justify-center gap-2 rounded-2xl bg-purple text-lg font-bold text-bg disabled:opacity-40"
+      data-testid="start"
+      :disabled="blocked"
+      @click="start"
+    >
+      <span class="i-tabler-cards size-6" aria-hidden="true" />{{ t('deal.start') }}
+    </button>
+  </BottomBar>
 </template>

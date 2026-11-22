@@ -13,7 +13,7 @@ import {
   type RoleCounts,
   type RoleId,
 } from '@werewolf/rules'
-import { AppShell, FACTION_CLASSES, ROLE_ICONS, Stepper } from '@werewolf/ui'
+import { AppShell, BottomBar, FACTION_CLASSES, ROLE_ICONS, Stepper } from '@werewolf/ui'
 import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import RulesEditor from '../components/RulesEditor.vue'
@@ -112,9 +112,7 @@ function save() {
         />
       </label>
 
-      <div
-        class="sticky bottom-0 -mx-4 flex flex-col gap-2 border-t border-border bg-bg/95 p-4 backdrop-blur"
-      >
+      <BottomBar>
         <p class="font-bold">{{ t('boards.total', { n: total }) }}</p>
         <BoardIssues :issues="issues" show-ok />
         <button
@@ -128,7 +126,7 @@ function save() {
             t('common.save')
           }}
         </button>
-      </div>
+      </BottomBar>
     </template>
   </AppShell>
 </template>

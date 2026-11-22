@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RoleChips } from '@werewolf/boards'
-import { AppShell } from '@werewolf/ui'
+import { AppShell, BottomBar } from '@werewolf/ui'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Timeline from '../components/Timeline.vue'
@@ -46,14 +46,16 @@ async function save() {
         <RoleChips :roles="game.board.roles" />
       </section>
       <Timeline :log="state.log" />
-      <button
-        type="button"
-        class="sticky bottom-4 h-12 rounded-xl bg-purple font-bold text-bg"
-        data-testid="import"
-        @click="save"
-      >
-        <span class="i-tabler-download mr-1 size-5" aria-hidden="true" />{{ t('import.action') }}
-      </button>
+      <BottomBar>
+        <button
+          type="button"
+          class="w-full h-12 rounded-xl bg-purple font-bold text-bg"
+          data-testid="import"
+          @click="save"
+        >
+          <span class="i-tabler-download mr-1 size-5" aria-hidden="true" />{{ t('import.action') }}
+        </button>
+      </BottomBar>
     </template>
   </AppShell>
 </template>

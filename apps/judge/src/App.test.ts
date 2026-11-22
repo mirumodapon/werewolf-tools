@@ -74,6 +74,9 @@ describe('judge', () => {
     await vi.waitFor(() => expect(w.find('[data-testid="step-title"]').exists()).toBe(true))
     expect(w.find('[data-testid="phase"]').text()).toBe('第 1 夜')
 
+    // The confirm button sits on the bottom bar, after everything else on the page.
+    expect(w.find('[data-testid="bottom-bar"] [data-testid="submit"]').exists()).toBe(true)
+    expect(w.find('[data-testid="bottom-bar"]').element.nextElementSibling).toBeNull()
     await next(w) // 天黑請閉眼
     expect(w.find('[data-testid="step-title"]').text()).toContain('狼人')
     seat(w, 7).click()

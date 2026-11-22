@@ -11,7 +11,7 @@ import {
   type RoleId,
   type Step,
 } from '@werewolf/rules'
-import { SeatPicker } from '@werewolf/ui'
+import { BottomBar, SeatPicker } from '@werewolf/ui'
 import { computed, ref } from 'vue'
 import { useJudgeText } from '../useJudgeText.ts'
 import ScriptLines from './ScriptLines.vue'
@@ -285,7 +285,7 @@ function chooseDayAction(action: 'vote' | 'explode' | 'duel') {
 </script>
 
 <template>
-  <div class="flex flex-col gap-3">
+  <div class="flex flex-1 flex-col gap-3">
     <h2 class="flex items-center gap-2 text-xl font-bold" data-testid="step-title">
       {{ step.id === 'identify' ? `${t('steps.identify')}・${roleLabel}` : t(`steps.${step.id}`) }}
       <span
@@ -569,19 +569,21 @@ function chooseDayAction(action: 'vote' | 'explode' | 'duel') {
       </section>
     </template>
 
-    <button
-      type="button"
-      class="sticky bottom-4 flex h-14 items-center justify-center gap-2 rounded-2xl bg-purple text-lg font-bold text-bg shadow-lg disabled:opacity-40"
-      :disabled="!valid"
-      data-testid="submit"
-      @click="submit"
-    >
-      {{
-        ['dusk', 'lovers', 'deaths'].includes(step.id) || step.dead
-          ? t('play.next')
-          : t('play.confirm')
-      }}
-      <span class="i-tabler-arrow-right size-6" aria-hidden="true" />
-    </button>
+    <BottomBar>
+      <button
+        type="button"
+        class="w-full flex h-14 items-center justify-center gap-2 rounded-2xl bg-purple text-lg font-bold text-bg disabled:opacity-40"
+        :disabled="!valid"
+        data-testid="submit"
+        @click="submit"
+      >
+        {{
+          ['dusk', 'lovers', 'deaths'].includes(step.id) || step.dead
+            ? t('play.next')
+            : t('play.confirm')
+        }}
+        <span class="i-tabler-arrow-right size-6" aria-hidden="true" />
+      </button>
+    </BottomBar>
   </div>
 </template>

@@ -84,6 +84,13 @@ const assign = (seat: number, role: RoleId) => store.apply({ step: 'assign', sea
         @click="undo"
       />
       <IconButton
+        v-if="step"
+        icon="i-tabler-flag"
+        :label="t('play.endGame')"
+        data-testid="end-game"
+        @click="endOpen = true"
+      />
+      <IconButton
         icon="i-tabler-users"
         :label="t('play.table')"
         data-testid="open-table"
@@ -157,15 +164,6 @@ const assign = (seat: number, role: RoleId) => store.apply({ step: 'assign', sea
           >{{ t('play.detail') }}</RouterLink
         >
       </template>
-
-      <button
-        v-if="step"
-        type="button"
-        class="self-center rounded-lg px-4 py-2 text-sm text-comment hover:bg-raised"
-        @click="endOpen = true"
-      >
-        <span class="i-tabler-flag mr-1 size-4" aria-hidden="true" />{{ t('play.endGame') }}
-      </button>
     </template>
 
     <Sheet v-model:open="tableOpen" :title="t('seats.title')">

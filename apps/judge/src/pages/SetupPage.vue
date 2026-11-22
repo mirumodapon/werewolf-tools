@@ -17,7 +17,7 @@ import {
   type JudgeOptions,
 } from '@werewolf/rules'
 import { toolById } from '@werewolf/registry'
-import { AppShell } from '@werewolf/ui'
+import { AppShell, BottomBar } from '@werewolf/ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AdvancedOptions from '../components/AdvancedOptions.vue'
@@ -123,15 +123,17 @@ async function start() {
         <p class="text-sm text-comment">{{ t('setup.unknownTable') }}</p>
       </template>
 
-      <button
-        type="button"
-        class="sticky bottom-4 mt-auto flex h-14 items-center justify-center gap-2 rounded-2xl bg-purple text-lg font-bold text-bg shadow-lg disabled:opacity-40"
-        :disabled="blocked"
-        data-testid="next"
-        @click="toOptions"
-      >
-        {{ t('setup.next') }}<span class="i-tabler-arrow-right size-6" aria-hidden="true" />
-      </button>
+      <BottomBar>
+        <button
+          type="button"
+          class="w-full flex h-14 items-center justify-center gap-2 rounded-2xl bg-purple text-lg font-bold text-bg disabled:opacity-40"
+          :disabled="blocked"
+          data-testid="next"
+          @click="toOptions"
+        >
+          {{ t('setup.next') }}<span class="i-tabler-arrow-right size-6" aria-hidden="true" />
+        </button>
+      </BottomBar>
     </template>
 
     <template v-else-if="selected">
@@ -161,14 +163,16 @@ async function start() {
         />
       </label>
 
-      <button
-        type="button"
-        class="sticky bottom-4 mt-auto flex h-14 items-center justify-center gap-2 rounded-2xl bg-purple text-lg font-bold text-bg shadow-lg"
-        data-testid="start"
-        @click="start"
-      >
-        <span class="i-tabler-player-play size-6" aria-hidden="true" />{{ t('setup.start') }}
-      </button>
+      <BottomBar>
+        <button
+          type="button"
+          class="w-full flex h-14 items-center justify-center gap-2 rounded-2xl bg-purple text-lg font-bold text-bg"
+          data-testid="start"
+          @click="start"
+        >
+          <span class="i-tabler-player-play size-6" aria-hidden="true" />{{ t('setup.start') }}
+        </button>
+      </BottomBar>
     </template>
   </AppShell>
 </template>
