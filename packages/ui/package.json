@@ -15,7 +15,9 @@
     "@werewolf/rules": "workspace:*",
     "@werewolf/storage": "workspace:*",
     "@werewolf/theme": "workspace:*",
+    "jsqr": "catalog:",
     "pinia": "catalog:",
+    "uqr": "catalog:",
     "vue": "catalog:",
     "vue-i18n": "catalog:"
   },

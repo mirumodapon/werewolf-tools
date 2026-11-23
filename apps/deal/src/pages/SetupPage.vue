@@ -4,6 +4,7 @@ import {
   IconButton,
   LocalePicker,
   ResetData,
+  ScanButton,
   Segmented,
   Sheet,
   ThemePicker,
@@ -37,6 +38,7 @@ const speakerCount = computed(() => {
 <template>
   <AppShell :title="t('app.title')">
     <template #actions>
+      <ScanButton />
       <IconButton
         icon="i-tabler-history"
         :label="t('deal.history')"

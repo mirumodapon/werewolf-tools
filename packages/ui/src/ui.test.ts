@@ -2,7 +2,7 @@ import { mount, type ComponentMountingOptions } from '@vue/test-utils'
 import { createWerewolfI18n } from '@werewolf/i18n'
 import { toolById } from '@werewolf/registry'
 import { createPinia, setActivePinia } from 'pinia'
-import { beforeEach, describe, expect, it } from 'vite-plus/test'
+import { beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import AppShell from './AppShell.vue'
 import { useConfirm } from './confirmStore.ts'
@@ -249,5 +249,76 @@ describe('SeatPicker with a "nobody" button', () => {
     await w.find('[data-testid="seat-none"]').trigger('click')
     await w.find('[data-testid="seat-none"]').trigger('click')
     expect(state()).toBe('null|false')
+  })
+})
+
+describe('QR codes', () => {
+  it("recognises the suite's share links and opens them on the site in use", async () => {
+    const { toolLinkTarget } = await import('./scan.ts')
+    const here = 'http://localhost:5173'
+    expect(toolLinkTarget('https://werewolf.mirumo.net/judge/?s=zAbC_-1', here)).toBe(
+      `${here}/judge/?s=zAbC_-1`,
+    )
+    expect(toolLinkTarget('https://werewolf.mirumo.net/judge?t=jXY', here)).toBe(
+      `${here}/judge/?t=jXY`,
+    )
+    expect(toolLinkTarget(' https://werewolf.mirumo.net/deal/?b=zQ#/x ', here)).toBe(
+      `${here}/deal/?b=zQ`,
+    )
+    expect(toolLinkTarget('https://werewolf.mirumo.net/judge/', here)).toBeNull()
+    expect(toolLinkTarget('https://werewolf.mirumo.net/?s=x', here)).toBeNull()
+    expect(toolLinkTarget('https://example.com/dealer/?b=x', here)).toBeNull()
+    expect(toolLinkTarget('javascript:alert(1)', here)).toBeNull()
+    expect(toolLinkTarget('hello', here)).toBeNull()
+  })
+
+  it('draws a QR code', async () => {
+    const { default: QrCode } = await import('./QrCode.vue')
+    const w = mount(QrCode, {
+      ...options(),
+      props: { value: 'https://werewolf.mirumo.net/judge/?s=x', label: 'qr' },
+    })
+    expect(w.find('[data-testid="qr-code"] svg').exists()).toBe(true)
+  })
+
+  it('says so when there is no camera', async () => {
+    const { default: QrScanner } = await import('./QrScanner.vue')
+    const w = mount(QrScanner, { ...options(), props: { open: false } })
+    await w.setProps({ open: true })
+    await nextTick()
+    expect(w.find('[data-testid="scan-status"]').text()).toBe('這個裝置或瀏覽器無法使用相機。')
+  })
+
+  it('opens a scanned share link and ignores other codes', async () => {
+    const { default: QrScanner } = await import('./QrScanner.vue')
+    const stopped: string[] = []
+    const stream = { getTracks: () => [{ stop: () => stopped.push('track') }] }
+    vi.stubGlobal('navigator', { ...navigator, mediaDevices: { getUserMedia: async () => stream } })
+    const codes = ['https://example.com/', 'https://werewolf.mirumo.net/judge/?s=zGame']
+    vi.stubGlobal(
+      'BarcodeDetector',
+      class {
+        async detect() {
+          const next = codes.shift()
+          return next ? [{ rawValue: next }] : []
+        }
+      },
+    )
+    vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue()
+    const go = vi.fn()
+    const w = mount(QrScanner, {
+      ...options(),
+      props: { open: false, go },
+      attachTo: document.body,
+    })
+    await w.setProps({ open: true })
+    await vi.waitFor(() => expect(w.find('[data-testid="scan-not-ours"]').exists()).toBe(true))
+    await vi.waitFor(() => expect(go).toHaveBeenCalledWith(`${location.origin}/judge/?s=zGame`), {
+      timeout: 2000,
+    })
+    expect(stopped).toEqual(['track'])
+    w.unmount()
+    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
   })
 })

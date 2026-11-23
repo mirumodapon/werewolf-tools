@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import QrCode from './QrCode.vue'
 import Sheet from './Sheet.vue'
 
-/** A share link to copy or hand to the system share sheet. */
+/** A share link as a QR code and text, to scan, copy or hand to the system share sheet. */
 const open = defineModel<boolean>('open', { required: true })
 const props = defineProps<{ title: string; name: string; url: string }>()
 const { t } = useI18n()
@@ -31,6 +32,8 @@ async function share() {
     <p v-if="!url">{{ t('common.loading') }}</p>
     <template v-else>
       <p class="font-bold">{{ name }}</p>
+      <QrCode :value="url" :label="title" />
+      <p class="text-center text-sm text-comment">{{ t('share.qr') }}</p>
       <input
         :value="url"
         readonly

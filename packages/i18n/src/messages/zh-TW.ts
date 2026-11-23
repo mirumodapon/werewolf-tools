@@ -129,7 +129,19 @@ export default {
       '確定要刪除所有工具的資料嗎？自訂板子、發牌紀錄、遊戲紀錄與設定都會消失，而且無法復原。',
     action: '刪除所有資料',
   },
+  scan: {
+    title: '掃描 QR code',
+    notOurs: '這不是狼人殺工具集的連結，請換一個 QR code。',
+    status: {
+      starting: '正在開啟相機…',
+      scanning: '把分享的 QR code 對準框內',
+      opening: '找到了，正在開啟…',
+      denied: '沒有相機權限：請在瀏覽器設定允許使用相機。',
+      unsupported: '這個裝置或瀏覽器無法使用相機。',
+    },
+  },
   share: {
+    qr: '用相機或「掃描」按鈕掃描 QR code 開啟',
     copyLink: '複製連結',
     copied: '已複製',
     system: '用其他 App 分享',

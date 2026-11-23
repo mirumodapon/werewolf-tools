@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { shareUrl } from '@werewolf/share'
-import { Segmented, Sheet } from '@werewolf/ui'
+import { QrCode, Segmented, Sheet } from '@werewolf/ui'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { download } from '../download.ts'
 import type { JudgeGame } from '../games/game.ts'
@@ -171,6 +171,7 @@ function shareImage() {
       </template>
 
       <template v-else>
+        <QrCode :value="link" :label="t('export.formats.link')" />
         <p class="text-sm text-comment">{{ t('export.linkHint') }}</p>
         <input
           :value="link"

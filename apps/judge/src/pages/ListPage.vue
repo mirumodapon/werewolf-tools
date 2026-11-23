@@ -5,6 +5,7 @@ import {
   IconButton,
   LocalePicker,
   ResetData,
+  ScanButton,
   Segmented,
   Sheet,
   ThemePicker,
@@ -120,6 +121,7 @@ async function importFile(e: Event) {
 <template>
   <AppShell :title="t('app.title')">
     <template #actions>
+      <ScanButton />
       <IconButton
         icon="i-tabler-settings"
         :label="t('common.settings')"

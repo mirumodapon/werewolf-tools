@@ -165,7 +165,19 @@ export default {
       'Delete all data of every tool? Custom boards, deals, game records and settings will be gone for good.',
     action: 'Delete all data',
   },
+  scan: {
+    title: 'Scan a QR code',
+    notOurs: 'This is not a Werewolf Tools link; try another QR code.',
+    status: {
+      starting: 'Opening the camera…',
+      scanning: 'Point the camera at a shared QR code',
+      opening: 'Found it, opening…',
+      denied: 'No camera permission: allow the camera in the browser settings.',
+      unsupported: 'This device or browser cannot use the camera.',
+    },
+  },
   share: {
+    qr: 'Scan the QR code with a camera or the Scan button to open it',
     copyLink: 'Copy link',
     copied: 'Copied',
     system: 'Share via…',

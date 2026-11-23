@@ -6,6 +6,7 @@ import {
   LocalePicker,
   markLaunchedFromHome,
   ResetData,
+  ScanButton,
   Sheet,
   StatusBadge,
   ThemePicker,
@@ -25,6 +26,7 @@ const usable = (tool: ToolMeta) => tool.status !== 'coming-soon'
 <template>
   <AppShell :title="t('home.title')">
     <template #actions>
+      <ScanButton />
       <IconButton
         icon="i-tabler-settings"
         :label="t('common.settings')"
